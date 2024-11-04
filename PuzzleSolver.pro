@@ -12,14 +12,19 @@ SOURCES += \
     imageviewer.cpp \
     main.cpp \
     mainwindow.cpp \
-    puzzlesolverlayout.cpp
+    puzzlesolverlayout.cpp \
+    puzzlepiece.cpp
 
 HEADERS += \
     imageviewer.h \
     mainwindow.h \
-    puzzlesolverlayout.h
+    puzzlesolverlayout.h \
+    puzzlepiece.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    .gitignore
