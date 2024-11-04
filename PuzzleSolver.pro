@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    edgematcher.cpp \
     imageviewer.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -16,6 +17,7 @@ SOURCES += \
     puzzlepiece.cpp
 
 HEADERS += \
+    edgematcher.h \
     imageviewer.h \
     mainwindow.h \
     puzzlesolverlayout.h \
