@@ -21,16 +21,3 @@ void ImageViewer::keyPressEvent(QKeyEvent *evt) {
     } else
         QGraphicsView::keyPressEvent(evt);
 }
-
-void ImageViewer::mouseMoveEvent(QMouseEvent *evt) {
-    // qDebug() << evt->pos();
-    // qDebug() << mapToScene(evt->pos());
-    // qDebug() << giPixmap->mapFromScene(mapToScene(evt->pos()));
-    // qDebug() << (giPixmap->mapFromScene(mapToScene(evt->pos()))-QPointF(0.5, 0.5)).toPoint();
-    // qDebug() << "";
-
-    QPoint pos = (giPixmap->mapFromScene(mapToScene(evt->pos()))-QPointF(0.5, 0.5)).toPoint();
-
-    if (image.valid(pos))
-        emit mouseMoved(pos, image.pixelColor(pos));
-}

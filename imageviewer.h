@@ -23,7 +23,6 @@ signals:
 protected:
 
     void keyPressEvent(QKeyEvent *evt) override;
-    void mouseMoveEvent(QMouseEvent *evt) override;
 };
 
 #endif // IMAGEVIEWER_H

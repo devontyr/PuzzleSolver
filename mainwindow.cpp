@@ -26,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     lastDir = settings.value("lastDir", "").toString();
 
 
-
 }
 
 MainWindow::~MainWindow() {
@@ -34,8 +33,25 @@ MainWindow::~MainWindow() {
     lastDir = settings.value("lastDir", "").toString();
 }
 
+bool MainWindow::isShadeOfWhite(const QRgb &color) {
+    int threshold = 20; // larger num if we want to accept more gray colors as "white"
+    int minBrightness = 200; // smaller num allows more gray colors as "white
+
+    //values are between 0-255
+    int r = qRed(color);
+    int g = qGreen(color);
+    int b = qBlue(color);
+
+    // Check if r/g/b are right hue (pure white/black would be 0)
+    if (abs(r - g) > threshold || abs(r - b) > threshold || abs(g - b) > threshold) {
+        return false;
+    }
+    // Check if r/g/b is right shade of white-gray-black
+    return r >= minBrightness && g >= minBrightness && b >= minBrightness;
+}
+
 void MainWindow::openImageSlot() {
-    //open file as pixmap and put on screen
+    //open file as QImage and put on screen
     QString fName = QFileDialog::getOpenFileName(this, "select image file", lastDir, "image files (*.png *.jpg *.bmp *.jpeg)");
     if (fName.isEmpty()) return;
     QImage image(fName);
@@ -43,7 +59,23 @@ void MainWindow::openImageSlot() {
 
     lastDir = QFileInfo(fName).absolutePath(); //update last directory
 
+    //save the center of the original image
+    orgImageCenter = new QPoint(image.height()/2, image.width()/2);
 
-    puzzleLayout = new PuzzleSolverLayout(image);
+
+    //process the image into B&W
+    processedImage = new QImage(image.width(), image.height(), QImage::Format_RGB32);
+    processedImage->fill(Qt::white);
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRgb pixel = image.pixel(x, y);
+            if (!isShadeOfWhite(pixel)) {
+                processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as a puzzle piece
+            }
+        }
+    }
+
+    puzzleLayout = new PuzzleSolverLayout(*processedImage);
     setCentralWidget(puzzleLayout);
 }

@@ -9,6 +9,10 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     QString lastDir;
     PuzzleSolverLayout *puzzleLayout;
+    QImage *processedImage;
+    QPoint *orgImageCenter;
+
+    bool isShadeOfWhite(const QRgb &color);
 
 public:
     MainWindow(QWidget *parent = nullptr);
