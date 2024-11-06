@@ -21,9 +21,11 @@ MainWindow::MainWindow(QWidget *parent)
     fileMenu->addAction(solvePuzzleAct);
     menuBar()->addMenu(fileMenu);
 
-    //Save last directory
+    //save the last directory
     QSettings settings("Group", "puzzle solver");
     lastDir = settings.value("lastDir", "").toString();
+
+
 
 }
 
