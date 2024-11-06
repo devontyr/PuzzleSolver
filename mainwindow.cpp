@@ -30,12 +30,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {
     QSettings settings("Group", "puzzle solver");
-    lastDir = settings.value("lastDir", "").toString();
+    lastDir = settings.value("lastDir", lastDir).toString();
 }
 
 bool MainWindow::isShadeOfWhite(const QRgb &color) {
-    int threshold = 20; // larger num if we want to accept more gray colors as "white"
-    int minBrightness = 200; // smaller num allows more gray colors as "white
+    int threshold = 10; // larger num if we want to accept more gray colors as "white"
+    int minBrightness = 169; // smaller num allows more gray colors as "white"
 
     //values are between 0-255
     int r = qRed(color);
@@ -65,7 +65,7 @@ void MainWindow::openImageSlot() {
 
     //process the image into B&W
     processedImage = new QImage(image.width(), image.height(), QImage::Format_RGB32);
-    processedImage->fill(Qt::white);
+    //processedImage->fill(Qt::white);
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
