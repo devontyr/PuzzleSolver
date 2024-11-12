@@ -50,6 +50,50 @@ bool MainWindow::isShadeOfWhite(const QRgb &color) {
     return r >= minBrightness && g >= minBrightness && b >= minBrightness;
 }
 
+QImage* MainWindow::floodFill(QImage* image) {
+    QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
+    QSet<QPoint> toDo;
+    int curPiecePixels = 0;
+    int C = image->width(), R = image->height();
+    QRgb orgColor = 0xffff0000; QRgb processedColor = 0xff0000bb;
+
+
+    // loop through possible start positions to find the beginning of a piece
+    for (int iStartRow=0; iStartRow < R; ++iStartRow) {
+        for (int iStartCol=0; iStartCol < C; ++iStartCol) {
+
+            // add first red pixel to the toDo
+            QPoint curPoint = QPoint(iStartRow, iStartCol);
+            if (image->pixel(curPoint) == orgColor) {
+                toDo.insert(curPoint);
+            } else {
+                continue;
+            }
+
+            while (!toDo.isEmpty()) {
+                QPoint topPoint = *toDo.begin(); // pop top pixel off the stack
+                image->setPixel(topPoint, processedColor); // turn it to a blue color
+                PuzzlePixels.insert(topPoint); // add it to the current puzzle piece
+                ++curPiecePixels; // add to the number of pixels
+
+                // add any red colored neighbors to toDo
+                QPoint lNeighbor = QPoint(topPoint.x() - 1, topPoint.y());
+                QPoint rNeighbor = QPoint(topPoint.x() + 1, topPoint.y());
+                QPoint tNeighbor = QPoint(topPoint.x(), topPoint.y() + 1);
+                QPoint bNeighbor = QPoint(topPoint.x(), topPoint.y() - 1);
+                if (image->valid(lNeighbor) && image->pixel(lNeighbor) == orgColor) toDo.insert(lNeighbor);
+                if (image->valid(rNeighbor) && image->pixel(rNeighbor) == orgColor) toDo.insert(rNeighbor);
+                if (image->valid(tNeighbor) && image->pixel(tNeighbor) == orgColor) toDo.insert(tNeighbor);
+                if (image->valid(bNeighbor) && image->pixel(bNeighbor) == orgColor) toDo.insert(bNeighbor);
+            }
+            // once toDo empty, we have found a full piece
+            // check that it has enough pixels and then add that pieces to the collection of pieces
+            if (curPiecePixels > 250) PuzzlePieces.append(PuzzlePixels);
+        }
+    }
+    return image;
+}
+
 void MainWindow::openImageSlot() {
     //open file as QImage and put on screen
     QString fName = QFileDialog::getOpenFileName(this, "select image file", lastDir, "image files (*.png *.jpg *.bmp *.jpeg)");
@@ -65,7 +109,6 @@ void MainWindow::openImageSlot() {
 
     //process the image into B&W
     processedImage = new QImage(image.width(), image.height(), QImage::Format_RGB32);
-    //processedImage->fill(Qt::white);
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
@@ -75,6 +118,8 @@ void MainWindow::openImageSlot() {
             }
         }
     }
+
+    processedImage = floodFill(processedImage);
 
     puzzleLayout = new PuzzleSolverLayout(*processedImage);
     setCentralWidget(puzzleLayout);

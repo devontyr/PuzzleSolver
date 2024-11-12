@@ -13,6 +13,7 @@ class MainWindow : public QMainWindow
     QPoint *orgImageCenter;
 
     bool isShadeOfWhite(const QRgb &color);
+    QImage* floodFill(QImage* image);
 
 public:
     MainWindow(QWidget *parent = nullptr);
