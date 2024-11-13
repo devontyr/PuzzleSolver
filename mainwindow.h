@@ -12,9 +12,6 @@ class MainWindow : public QMainWindow
     QImage processedImage;
     QPoint orgImageCenter;
 
-    bool isShadeOfWhite(const QRgb &color);
-    void floodFill(QImage& image);
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
