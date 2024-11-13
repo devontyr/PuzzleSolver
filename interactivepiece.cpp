@@ -1,4 +1,4 @@
- #include "interactivepiece.h"
+#include "interactivepiece.h"
 #include <cmath>
 
 using namespace std;
@@ -32,6 +32,7 @@ void interactivePiece::mousePressEvent(QMouseEvent *evt) {
     QGraphicsView::mousePressEvent(evt);
 }
 
+
 void interactivePiece::mouseReleaseEvent(QMouseEvent *evt) {
     QGraphicsItem *item = itemAt(evt->pos());
     if (!item) {
@@ -39,15 +40,13 @@ void interactivePiece::mouseReleaseEvent(QMouseEvent *evt) {
         return;
     }
 
-    const int snapRadius = 60;  // how far out a piece will snap
-    const int pieceSize = 52;   // replace with the piece's actual size (maybe plus a tiny bit of room)
-
+    const int snapRadius = 60; // like a threshhold for how far out a piece will snap
+    const int pieceSize = 52; // replace with the piece's actual size (maybe plus a tiny bit of room)
     QPointF itemPos = item->pos();
-
     QRectF searchArea(itemPos.x() - snapRadius, itemPos.y() - snapRadius, snapRadius * 2, snapRadius * 2);
-
     QGraphicsItem *closestItem = nullptr;
     int closestDistance = snapRadius;
+    QPointF snapPosition;
 
     for (QGraphicsItem *otherItem : scene->items(searchArea)) {
         if (otherItem == item) continue;
@@ -56,24 +55,35 @@ void interactivePiece::mouseReleaseEvent(QMouseEvent *evt) {
         int distance = QLineF(itemPos, otherPos).length();
 
         if (distance < closestDistance) {
-            closestItem = otherItem;
-            closestDistance = distance;
+            int deltaX = itemPos.x() - otherPos.x();
+            int deltaY = itemPos.y() - otherPos.y();
+            QPointF potentialSnapPos;
+
+            if (abs(deltaX) > abs(deltaY)) {
+                potentialSnapPos = QPointF(otherPos.x() + (deltaX > 0 ? pieceSize : -pieceSize), otherPos.y());
+            } else {
+                potentialSnapPos = QPointF(otherPos.x(), otherPos.y() + (deltaY > 0 ? pieceSize : -pieceSize));
+            }
+
+            bool positionOccupied = false;
+            for (QGraphicsItem *checkItem : scene->items(QRectF(potentialSnapPos, QSizeF(pieceSize, pieceSize)))) {
+                if (checkItem != item) {
+                    positionOccupied = true;
+                    break;
+                }
+            }
+
+            if (!positionOccupied) {
+                closestItem = otherItem;
+                closestDistance = distance;
+                snapPosition = potentialSnapPos;
+            }
         }
     }
 
     if (closestItem) {
-        QPointF otherPos = closestItem->pos();
-
-        int deltaX = itemPos.x() - otherPos.x();
-        int deltaY = itemPos.y() - otherPos.y();
-
-        if (std::abs(deltaX) > std::abs(deltaY)) {
-            item->setPos(otherPos.x() + (deltaX > 0 ? pieceSize : -pieceSize), otherPos.y());
-        } else {
-            item->setPos(otherPos.x(), otherPos.y() + (deltaY > 0 ? pieceSize : -pieceSize));
-        }
+        item->setPos(snapPosition);
     }
-
 
     QGraphicsView::mouseReleaseEvent(evt);
 }
