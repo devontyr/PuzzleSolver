@@ -9,12 +9,17 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     QString lastDir;
+    QImage *processedImage;
     PuzzleSolverLayout *puzzleLayout;
-    interactivePiece* interactivePieceLayout;
+    QPoint *orgImageCenter;
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    bool isShadeOfWhite(const QRgb &color);
+    bool isSurroundedRed(int pixelX, int pixelY);
+    bool isSurroundedBlack(int pixelX, int pixelY);
 
 public slots:
     void openImageSlot();
