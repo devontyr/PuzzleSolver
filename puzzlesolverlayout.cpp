@@ -1,4 +1,5 @@
 #include "puzzlesolverlayout.h"
+#include "interactivepiece.h"
 
 #include <QtWidgets>
 #include <imageviewer.h>
@@ -17,12 +18,13 @@ PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     mainLayout->addWidget(imageViewer);
 
     // add QGraphicsView to the bottom
-    solverInterface = new QGraphicsView();
-    mainLayout->addWidget(solverInterface);
+    solverInterface = new QGraphicsView;
+    mainLayout->addWidget(imageViewer);
 
     scene = new QGraphicsScene(this);
     solverInterface->setScene(scene);
-
+    interactivePiece* interactivePieceLayout = new interactivePiece(pieces);
+    mainLayout->addWidget(interactivePieceLayout);
 }
 
 bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
@@ -50,7 +52,7 @@ QImage PuzzleSolverLayout::processImage(QImage& image) {
         for (int x = 0; x < image.width(); ++x) {
             QRgb pixel = image.pixel(x, y);
             if (!isShadeOfWhite(pixel)) {
-                processedImage.setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as a puzzle piece
+                processedImage.setPixel(QPoint(x,y), 0xffff0000); //mark the pixel as a puzzle piece
             }
         }
     }
@@ -60,7 +62,7 @@ QImage PuzzleSolverLayout::processImage(QImage& image) {
 void PuzzleSolverLayout::pieceSeperator(QImage& image) {
     QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QSet<QPoint> toDo;
-    int curPiecePixels = 0; int minPieceSize = 15000;
+    int minPieceSize = 30000;
     int C = image.width(), R = image.height();
     QRgb orgColor = 0xffff0000; QRgb processedColor = 0xff0000bb;
     bool color = true;
@@ -70,7 +72,9 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
         for (int iStartCol=0; iStartCol < C; ++iStartCol) {
 
             //create a new puzzle piece
-            QImage piece;
+            QImage piece(C, R, QImage::Format_RGB32);
+            piece.fill(0x00ffffff);
+            int curPiecePixels = 0;
 
             // add first red pixel to the toDo
             QPoint curPoint = QPoint(iStartCol, iStartRow);
@@ -113,9 +117,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
             qDebug() << "num Pixels: " << curPiecePixels;
             if (curPiecePixels >= minPieceSize) {
                 PuzzlePieces.append(PuzzlePixels);
-
-                //make into Pixmap and add to the scene
-                scene->addPixmap(QPixmap::fromImage(piece));
+                pieces.append(piece);
             }
 
             qDebug() << "pieces:" << PuzzlePieces.size();

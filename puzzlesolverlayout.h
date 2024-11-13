@@ -9,6 +9,7 @@ class PuzzleSolverLayout: public QWidget
     QImage image;
     QGraphicsScene* scene;
     QGraphicsView *solverInterface;
+    QList<QImage> pieces;
 
     bool isShadeOfWhite(const QRgb &color);
     QImage processImage(QImage& image);
