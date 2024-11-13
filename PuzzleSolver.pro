@@ -13,13 +13,18 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     puzzlesolverlayout.cpp \
+    puzzlepiece.cpp \
+    interactivepiece.cpp
+    puzzle_solver.cpp \
     puzzlepiece.cpp
 
 HEADERS += \
     imageviewer.h \
     mainwindow.h \
     puzzlesolverlayout.h \
-    puzzlepiece.h
+    puzzlepiece.h \
+    interactivepiece.h
+    puzzle_solver.h \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -28,3 +33,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     .gitignore
+
+ICON = icons/testIcon.icns

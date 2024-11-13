@@ -3,16 +3,13 @@
 
 #include <QMainWindow>
 #include "puzzlesolverlayout.h"
+#include "interactivepiece.h"
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
     QString lastDir;
     PuzzleSolverLayout *puzzleLayout;
-    QImage *processedImage;
-    QPoint *orgImageCenter;
-
-    bool isShadeOfWhite(const QRgb &color);
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -21,5 +18,14 @@ public:
 public slots:
     void openImageSlot();
 
+};
+
+extern MainWindow *mainWindow;
+
+class Waiter {
+    static int count;
+public:
+    Waiter();
+    ~Waiter();
 };
 #endif // MAINWINDOW_H

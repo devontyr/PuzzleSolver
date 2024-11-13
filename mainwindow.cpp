@@ -2,6 +2,8 @@
 #include <imageviewer.h>
 #include <QtWidgets>
 
+MainWindow *mainWindow;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
 
@@ -50,6 +52,26 @@ bool MainWindow::isShadeOfWhite(const QRgb &color) {
     return r >= minBrightness && g >= minBrightness && b >= minBrightness;
 }
 
+int Waiter::count = 0;
+
+Waiter::Waiter() {
+    if (++count == 1) {
+        mainWindow->setEnabled(false);
+        mainWindow->statusBar()->showMessage("patience is a virtue...");
+        mainWindow->statusBar()->show();
+        QApplication::processEvents();
+    }
+}
+
+Waiter::~Waiter(){
+    if (--count == 0) {
+        mainWindow->setEnabled(true);
+        mainWindow->statusBar()->clearMessage();
+        mainWindow->statusBar()->hide();
+        QApplication::processEvents();
+    }
+}
+
 void MainWindow::openImageSlot() {
     //open file as QImage and put on screen
     QString fName = QFileDialog::getOpenFileName(this, "select image file", lastDir, "image files (*.png *.jpg *.bmp *.jpeg)");
@@ -75,7 +97,8 @@ void MainWindow::openImageSlot() {
             }
         }
     }
-
     puzzleLayout = new PuzzleSolverLayout(*processedImage);
     setCentralWidget(puzzleLayout);
+
+    setCentralWidget(interactivePieceLayout);
 }
