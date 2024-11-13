@@ -12,12 +12,14 @@ SOURCES += \
     imageviewer.cpp \
     main.cpp \
     mainwindow.cpp \
+    puzzle_solver.cpp \
     puzzlesolverlayout.cpp \
     puzzlepiece.cpp
 
 HEADERS += \
     imageviewer.h \
     mainwindow.h \
+    puzzle_solver.h \
     puzzlesolverlayout.h \
     puzzlepiece.h
 
