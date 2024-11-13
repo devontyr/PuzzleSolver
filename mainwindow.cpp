@@ -69,21 +69,8 @@ void MainWindow::openImageSlot() {
     // puzzleLayout = new PuzzleSolverLayout(image);
     // setCentralWidget(puzzleLayout);
 
-    QList<QImage> pieces;
-    QList<QColor> colors;
 
-    for (int i = 0; i < 10; ++i) {
-        pieces.append(QImage(50, 50, QImage::Format_ARGB32));
-        colors.append(QColor::fromHsv(i * 36, 255, 200));
-    }
 
-    for (int i = 0; i < pieces.size(); ++i) {
-        QPainter painter(&pieces[i]);
-        painter.fillRect(pieces[i].rect(), colors[i]);
-    }
-
-    // sent in list of pieces as images
-
-    interactivePieceLayout = new interactivePiece(pieces);
+    // interactivePieceLayout = new interactivePiece(pieces);
     setCentralWidget(interactivePieceLayout);
 }
