@@ -1,7 +1,9 @@
 #include "puzzlepiece.h"
 
-puzzlepiece::puzzlepiece(const int id, const bool is_border, const vector<vector<int>> north, const vector<vector<int>> east, const vector<vector<int>> south, const vector<vector<int>> west)
-    : id(id), location(pair<int, int>(-1, -1)), is_border(is_border), north(north), east(east), south(south),  west(west){}
+puzzlepiece::puzzlepiece(int id, const std::vector<std::vector<int>>& north, const std::vector<std::vector<int>>& east, const std::vector<std::vector<int>>& south, const std::vector<std::vector<int>>& west)
+    : id(id), north(north), east(east), south(south), west(west), location(std::pair<int, int>(-1, -1)) {}
+
+puzzlepiece::puzzlepiece() : id(0), location(pair<int, int>(-1, -1)) {};
 
 void puzzlepiece::rotate(){
     const vector<vector<int>> temp = north;
@@ -14,7 +16,6 @@ void puzzlepiece::rotate(){
 void puzzlepiece::print_piece(){
     cout << "id: " << id << endl;
     cout << "location: (" << location.first << ", " << location.second << ")" << endl;
-    cout << "is_border: " << is_border << endl;
 
     auto print_side = [](const vector<vector<int>>& side, const string& label) {
         cout << label << ":" << endl;
