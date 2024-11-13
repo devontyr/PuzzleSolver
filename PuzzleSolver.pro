@@ -15,6 +15,8 @@ SOURCES += \
     puzzlesolverlayout.cpp \
     puzzlepiece.cpp \
     interactivepiece.cpp
+    puzzle_solver.cpp \
+    puzzlepiece.cpp
 
 HEADERS += \
     imageviewer.h \
@@ -22,6 +24,7 @@ HEADERS += \
     puzzlesolverlayout.h \
     puzzlepiece.h \
     interactivepiece.h
+    puzzle_solver.h \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -32,8 +35,3 @@ DISTFILES += \
     .gitignore
 
 ICON = icons/testIcon.icns
-
-macx {
-    # Add the icon name to Info.plist
-    QMAKE_INFO_PLIST_VALUE_BUNDLEICON = testIcon
-}
