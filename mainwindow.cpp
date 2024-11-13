@@ -2,6 +2,8 @@
 #include <imageviewer.h>
 #include <QtWidgets>
 
+MainWindow *mainWindow;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
 
@@ -21,15 +23,37 @@ MainWindow::MainWindow(QWidget *parent)
     fileMenu->addAction(solvePuzzleAct);
     menuBar()->addMenu(fileMenu);
 
-    //Save last directory
+    //save the last directory
     QSettings settings("Group", "puzzle solver");
     lastDir = settings.value("lastDir", "").toString();
+
+
 
 }
 
 MainWindow::~MainWindow() {
     QSettings settings("Group", "puzzle solver");
     lastDir = settings.value("lastDir", "").toString();
+}
+
+int Waiter::count = 0;
+
+Waiter::Waiter() {
+    if (++count == 1) {
+        mainWindow->setEnabled(false);
+        mainWindow->statusBar()->showMessage("patience is a virtue...");
+        mainWindow->statusBar()->show();
+        QApplication::processEvents();
+    }
+}
+
+Waiter::~Waiter(){
+    if (--count == 0) {
+        mainWindow->setEnabled(true);
+        mainWindow->statusBar()->clearMessage();
+        mainWindow->statusBar()->hide();
+        QApplication::processEvents();
+    }
 }
 
 void MainWindow::openImageSlot() {
@@ -42,6 +66,11 @@ void MainWindow::openImageSlot() {
     lastDir = QFileInfo(fName).absolutePath(); //update last directory
 
 
-    puzzleLayout = new PuzzleSolverLayout(image);
-    setCentralWidget(puzzleLayout);
+    // puzzleLayout = new PuzzleSolverLayout(image);
+    // setCentralWidget(puzzleLayout);
+
+
+
+    // interactivePieceLayout = new interactivePiece(pieces);
+    setCentralWidget(interactivePieceLayout);
 }
