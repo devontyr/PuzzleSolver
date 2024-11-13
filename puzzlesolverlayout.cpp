@@ -72,9 +72,10 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
         for (int iStartCol=0; iStartCol < C; ++iStartCol) {
 
             //create a new puzzle piece
-            QImage piece(C, R, QImage::Format_RGB32);
+            QImage piece(C, R, QImage::Format_ARGB32);
             piece.fill(0x00ffffff);
             int curPiecePixels = 0;
+            int minX = C; int minY = R; int maxX = 0; int maxY = 0;
 
             // add first red pixel to the toDo
             QPoint curPoint = QPoint(iStartCol, iStartRow);
@@ -97,6 +98,8 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
                 // add it to the current puzzle piece
                 piece.setPixel(topPoint, processedColor);
                 PuzzlePixels.insert(topPoint);
+                minX = fmin(minX, topPoint.x()); minY = fmin(minY, topPoint.y());
+                maxX = fmax(maxX, topPoint.x()); maxY = fmax(maxY, topPoint.y());
 
                 ++curPiecePixels; // add to the number of pixels
 
@@ -117,7 +120,11 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
             qDebug() << "num Pixels: " << curPiecePixels;
             if (curPiecePixels >= minPieceSize) {
                 PuzzlePieces.append(PuzzlePixels);
-                pieces.append(piece);
+
+                //crop piece and add it to pieces
+                QRect cropRect(minX, minY, maxX-minX, maxY-minY);
+                QImage croppedPiece = piece.copy(cropRect);
+                pieces.append(croppedPiece);
             }
 
             qDebug() << "pieces:" << PuzzlePieces.size();
