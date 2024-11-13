@@ -65,7 +65,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
     int minPieceSize = 30000;
     int C = image.width(), R = image.height();
     QRgb orgColor = 0xffff0000; QRgb processedColor = 0xff0000bb;
-    bool color = true;
+
 
     // loop through possible start positions to find the beginning of a piece
     for (int iStartRow=0; iStartRow < R; ++iStartRow) {
@@ -90,8 +90,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
                 QPoint topPoint = *toDo.begin();
                 toDo.erase(toDo.begin()); // pop top pixel off the stack
 
-                if(color) {processedColor = 0xff0000ff;}
-                else {processedColor = 0xff00ff00;}
+                //processedColor = image.pixel(topPoint);
 
                 image.setPixel(topPoint, processedColor); // turn it to a blue color
 
@@ -115,9 +114,6 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
             }
             // once toDo empty, we have found a full piece
             // check that it has enough pixels and then add that pieces to the collection of pieces
-            color = !color;
-
-            qDebug() << "num Pixels: " << curPiecePixels;
             if (curPiecePixels >= minPieceSize) {
                 PuzzlePieces.append(PuzzlePixels);
 
@@ -126,8 +122,6 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
                 QImage croppedPiece = piece.copy(cropRect);
                 pieces.append(croppedPiece);
             }
-
-            qDebug() << "pieces:" << PuzzlePieces.size();
         }
     }
 }
