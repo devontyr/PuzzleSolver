@@ -6,6 +6,7 @@
 class puzzle_solver
 {
 public:
+<<<<<<< HEAD
     puzzle_solver(vector<puzzlepiece>& internal_pieces, vector<puzzlepiece>& border_pieces, int total_number_pieces);
     void fit_internal_piece(pair<int, int> pos);
     void solve();
@@ -21,6 +22,15 @@ private:
     vector<puzzlepiece> unfitted_internal_pieces;
     vector<puzzlepiece> unfitted_border_pieces;
     int total_number_pieces;
+=======
+    puzzle_solver(vector<puzzlepiece>& pieces, pair<int, int> direction);
+    void fit_piece(pair<int, int> pos);
+    void solve();
+
+private:
+    vector<vector<puzzlepiece>> grid;
+    vector<puzzlepiece> unfitted_pieces;
+>>>>>>> bdab2c3df9ce9286019e821303c026890b767304
 
 };
 #endif // PUZZLE_SOLVER_H
