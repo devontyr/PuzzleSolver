@@ -10,6 +10,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     QString lastDir;
     PuzzleSolverLayout *puzzleLayout;
+    interactivePiece* interactivePieceLayout;
 
 public:
     MainWindow(QWidget *parent = nullptr);
