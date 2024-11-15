@@ -9,8 +9,8 @@ PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     pieceSeperator(redImage);
 
     // LAYOUTS
-    // set the vertical box
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    // set the horizontal box
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
     setLayout(mainLayout);
 
     // add the ImageViewer to the top

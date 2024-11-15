@@ -13,12 +13,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     puzzlesolverlayout.cpp \
+    interactivepiece.cpp \
     puzzlepiece.cpp
 
 HEADERS += \
     imageviewer.h \
     mainwindow.h \
     puzzlesolverlayout.h \
+    interactivepiece.h \
     puzzlepiece.h
 
 # Default rules for deployment.
