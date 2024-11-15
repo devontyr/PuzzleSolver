@@ -66,7 +66,6 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
             QPoint curPoint = QPoint(iStartCol, iStartRow);
             if (!isShadeOfWhite(image.pixel(curPoint))) {
                 toDo.insert(curPoint);
-                qDebug() << "starting point found";
             } else {
                 continue;
             }
