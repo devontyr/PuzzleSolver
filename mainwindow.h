@@ -12,7 +12,7 @@ class MainWindow : public QMainWindow
     PuzzleSolverLayout *puzzleLayout;
     QImage processedImage;
     QPoint orgImageCenter;
-    // interactivePiece* interactivePieceLayout;
+    interactivePiece* interactivePieceLayout;
 
 public:
     MainWindow(QWidget *parent = nullptr);

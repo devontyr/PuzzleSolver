@@ -1,58 +1,34 @@
 #include "puzzle_solver.h"
 
-// cant assume perfect border edges
+puzzle_solver::puzzle_solver(vector<puzzlepiece>& internal_pieces, vector<puzzlepiece>& border_pieces)
+    : grid(vector<vector<puzzlepiece>>()), unfitted_internal_pieces(internal_pieces), unfitted_border_pieces(border_pieces), THRESHOLD(1200) {}
 
-puzzle_solver::puzzle_solver(vector<puzzlepiece>& internal_pieces, vector<puzzlepiece>& border_pieces, int total_number_pieces)
-    : grid(vector<vector<puzzlepiece>>()), unfitted_internal_pieces(internal_pieces), unfitted_border_pieces(border_pieces), total_number_pieces(total_number_pieces) {}
+int puzzle_solver::calculate_similarity(const vector<pair<int, int>>& edge1, const vector<pair<int, int>>& edge2){
 
-int puzzle_solver::calculate_similarity(const vector<vector<int>>& edge1, const vector<vector<int>>& edge2){
-    int rows = edge1.size();
-    int cols = edge1[0].size();
-
-    auto nearest_one = [](pair<int, int> pos, const vector<vector<int>>& comp_edge){
-        unordered_set<pair<int, int>> visited;
-        queue<pair<pair<int, int>, int>> concentric;
-        vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
-        int nrows = comp_edge.size(), ncols = comp_edge[0].size();
-        concentric.push({pos, 0});
-        while (concentric.size() > 0){
-            auto [new_pos, num_concentric] = concentric.front();
-            concentric.pop();
-            int xpos = new_pos.first, ypos = new_pos.second;
-            if (comp_edge[xpos][ypos] == 1){
-                return num_concentric;
-            }
-            for (pair<int, int>& direction : directions){
-                int dx = xpos + direction.first, dy = ypos + direction.second;
-                if (visited.find({dx, dy}) == visited.end() && dx >= 0 && dx < nrows && dy >= 0 && dy <= ncols){
-                    concentric.push({{dx, dy}, num_concentric + 1});
-                }
-            }
-        }
-        return INT_MAX;
-    };
-
-    int match_score = 0;
-
-    for (int row = 0; row < rows; ++row){
-        for (int col = 0; col < cols; ++col){
-            if (edge1[row][col] == 1){
-                match_score += nearest_one({row, col}, edge2);
+    int NUM_CHECKS = 5;
+    int n = edge1.size(), m = edge2.size();
+    int similarity = 0;
+    for (int idx = 0; idx < n; ++idx){
+        pair<int, int> loc = edge1[idx];
+        for (int second_idx = idx - NUM_CHECKS; second_idx < idx + NUM_CHECKS + 1; ++second_idx){
+            if (second_idx >= 0 && second_idx < m){
+                pair<int, int> edgetwo_loc = edge2[second_idx];
+                similarity += sqrt((loc.first - edgetwo_loc.first)*(loc.first - edgetwo_loc.first) + (loc.second - edgetwo_loc.second)*(loc.second - edgetwo_loc.second));
             }
         }
     }
+    return similarity;
 
-    return match_score;
 }
 
-puzzlepiece puzzle_solver::find_first_corner(vector<vector<int>>& border_edge){
+puzzlepiece puzzle_solver::find_first_corner(vector<pair<int, int>>& border_edge){
 
     int n = unfitted_border_pieces.size();
     for (int idx = 0; idx < n; ++idx){
         puzzlepiece piece = unfitted_border_pieces[idx];
         int num_rotations = 0;
         while (num_rotations < 4){
-            if (calculate_similarity(border_edge, piece.west) + calculate_similarity(border_edge, piece.north) == 0){ // two border edges
+            if (calculate_similarity(border_edge, piece.west) < THRESHOLD && calculate_similarity(border_edge, piece.north) < THRESHOLD){ // two border edges
                 unfitted_border_pieces.erase(unfitted_border_pieces.begin() + idx);
                 return piece;
             }
@@ -101,16 +77,16 @@ void puzzle_solver::fit_internal_piece(pair<int, int> pos){
     grid[x_row][y_col] = best_fit.second;
 }
 
-void puzzle_solver::fit_top_row(vector<vector<int>>& border_edge){
+void puzzle_solver::fit_top_row(vector<pair<int, int>>& border_edge){
 
     vector<puzzlepiece> top_row;
     top_row.push_back(find_first_corner(border_edge));
-    while (calculate_similarity(border_edge, top_row.back().east) + calculate_similarity(border_edge, top_row.back().north) == 0){
+    while (calculate_similarity(border_edge, top_row.back().east) > THRESHOLD || calculate_similarity(border_edge, top_row.back().north) > THRESHOLD){
         pair<int, puzzlepiece> best_fit = {INT_MAX, puzzlepiece()};
         for (puzzlepiece& piece : unfitted_border_pieces){
             int num_rotations = 0;
             while (num_rotations < 4){
-                if (calculate_similarity(border_edge, piece.north) == 0){
+                if (calculate_similarity(border_edge, piece.north) <= THRESHOLD){
                     int score = calculate_similarity(top_row.back().west, piece.east);
                     if (score < best_fit.first){
                         best_fit = {score, puzzlepiece(piece.id, piece.north, piece.east, piece.south, piece.west)};
@@ -133,15 +109,15 @@ void puzzle_solver::fit_top_row(vector<vector<int>>& border_edge){
     grid.push_back(top_row);
 }
 
-void puzzle_solver::fit_right_col(vector<vector<int>>& border_edge){
+void puzzle_solver::fit_right_col(vector<pair<int, int>>& border_edge){
 
-    while (calculate_similarity(border_edge, grid.back().back().south) + calculate_similarity(border_edge, grid.back().back().east) > 0){
+    while (calculate_similarity(border_edge, grid.back().back().south) > THRESHOLD || calculate_similarity(border_edge, grid.back().back().east) > THRESHOLD){
         vector<puzzlepiece> next_row(grid[0].size(), puzzlepiece());
         pair<int, puzzlepiece> best_fit = {INT_MAX, puzzlepiece()};
         for (puzzlepiece& piece : unfitted_border_pieces){
             int num_rotations = 0;
             while (num_rotations < 4){
-                if (calculate_similarity(border_edge, piece.east) == 0){
+                if (calculate_similarity(border_edge, piece.east) <= THRESHOLD){
                     int score = calculate_similarity(grid.back().back().south, piece.north);
                     if (score < best_fit.first){
                         best_fit = {score, puzzlepiece(piece.id, piece.north, piece.east, piece.south, piece.west)};
@@ -164,14 +140,14 @@ void puzzle_solver::fit_right_col(vector<vector<int>>& border_edge){
     }
 }
 
-void puzzle_solver::fit_bottom_row(vector<vector<int>>& border_edge){
+void puzzle_solver::fit_bottom_row(vector<pair<int, int>>& border_edge){
 
-    while (calculate_similarity(border_edge, grid.back().front().west) + calculate_similarity(border_edge, grid.back().front().south) > 0){
+    while (calculate_similarity(border_edge, grid.back().front().west) > THRESHOLD || calculate_similarity(border_edge, grid.back().front().south) > THRESHOLD){
         pair<int, puzzlepiece> best_fit = {INT_MAX, puzzlepiece()};
         for (puzzlepiece& piece : unfitted_border_pieces){
             int num_rotations = 0;
             while (num_rotations < 4){
-                if (calculate_similarity(border_edge, piece.south) == 0){
+                if (calculate_similarity(border_edge, piece.south) <= THRESHOLD){
                     int score = calculate_similarity(grid.back().front().west, piece.east);
                     if (score < best_fit.first){
                         best_fit = {score, puzzlepiece(piece.id, piece.north, piece.east, piece.south, piece.west)};
@@ -194,7 +170,7 @@ void puzzle_solver::fit_bottom_row(vector<vector<int>>& border_edge){
 
 }
 
-void puzzle_solver::fit_left_col(vector<vector<int>>& border_edge){
+void puzzle_solver::fit_left_col(vector<pair<int, int>>& border_edge){
 
     int n = grid.size();
     for (int row_idx = n-1; row_idx > 0; --row_idx){
@@ -202,7 +178,7 @@ void puzzle_solver::fit_left_col(vector<vector<int>>& border_edge){
         for (puzzlepiece& piece : unfitted_border_pieces){
             int num_rotations = 0;
             while (num_rotations < 4){
-                if (calculate_similarity(border_edge, piece.west) == 0){
+                if (calculate_similarity(border_edge, piece.west) <= THRESHOLD){
                     int score = calculate_similarity(grid[row_idx+1][0].north, piece.south);
                     if (score < best_fit.first){
                         best_fit = {score, puzzlepiece(piece.id, piece.north, piece.east, piece.south, piece.west)};
@@ -225,10 +201,10 @@ void puzzle_solver::fit_left_col(vector<vector<int>>& border_edge){
 
 void puzzle_solver::solve(){
 
-    int rows = unfitted_border_pieces[0].north.size(), cols = unfitted_border_pieces[0].north[0].size(); // grab dimensions of edge matrix
-    vector<vector<int>> border_edge(rows, vector<int>(cols, 0));
-    for (int col = 0; col < cols; ++col){
-        border_edge[0][col] = 1;
+    vector<pair<int, int>> border_edge;
+    int num_edge_cols = 600;
+    for (int idx =0; idx < num_edge_cols; ++idx){
+        border_edge.push_back({0, idx});
     }
 
     fit_top_row(border_edge);
