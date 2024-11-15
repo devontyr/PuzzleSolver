@@ -6,43 +6,6 @@ puzzle_solver::puzzle_solver(vector<puzzlepiece>& internal_pieces, vector<puzzle
     : grid(vector<vector<puzzlepiece>>()), unfitted_internal_pieces(internal_pieces), unfitted_border_pieces(border_pieces), total_number_pieces(total_number_pieces) {}
 
 int puzzle_solver::calculate_similarity(const vector<vector<int>>& edge1, const vector<vector<int>>& edge2){
-    int rows = edge1.size();
-    int cols = edge1[0].size();
-
-    auto nearest_one = [](pair<int, int> pos, const vector<vector<int>>& comp_edge){
-        unordered_set<pair<int, int>> visited;
-        queue<pair<pair<int, int>, int>> concentric;
-        vector<pair<int, int>> directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}};
-        int nrows = comp_edge.size(), ncols = comp_edge[0].size();
-        concentric.push({pos, 0});
-        while (concentric.size() > 0){
-            auto [new_pos, num_concentric] = concentric.front();
-            concentric.pop();
-            int xpos = new_pos.first, ypos = new_pos.second;
-            if (comp_edge[xpos][ypos] == 1){
-                return num_concentric;
-            }
-            for (pair<int, int>& direction : directions){
-                int dx = xpos + direction.first, dy = ypos + direction.second;
-                if (visited.find({dx, dy}) == visited.end() && dx >= 0 && dx < nrows && dy >= 0 && dy <= ncols){
-                    concentric.push({{dx, dy}, num_concentric + 1});
-                }
-            }
-        }
-        return INT_MAX;
-    };
-
-    int match_score = 0;
-
-    for (int row = 0; row < rows; ++row){
-        for (int col = 0; col < cols; ++col){
-            if (edge1[row][col] == 1){
-                match_score += nearest_one({row, col}, edge2);
-            }
-        }
-    }
-
-    return match_score;
 }
 
 puzzlepiece puzzle_solver::find_first_corner(vector<vector<int>>& border_edge){
