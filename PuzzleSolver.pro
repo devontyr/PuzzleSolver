@@ -14,7 +14,7 @@ SOURCES += \
     mainwindow.cpp \
     puzzlesolverlayout.cpp \
     puzzlepiece.cpp \
-    interactivepiece.cpp
+    interactivepiece.cpp \
     puzzle_solver.cpp \
     puzzlepiece.cpp
 
@@ -23,8 +23,8 @@ HEADERS += \
     mainwindow.h \
     puzzlesolverlayout.h \
     puzzlepiece.h \
-    interactivepiece.h
-    puzzle_solver.h \
+    interactivepiece.h \
+    puzzle_solver.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
