@@ -67,11 +67,11 @@ void MainWindow::openImageSlot() {
     //save the center of the original image
     orgImageCenter = QPoint(image.height()/2, image.width()/2);
 
-    // puzzleLayout = new PuzzleSolverLayout(image);
-    // setCentralWidget(puzzleLayout);
+    puzzleLayout = new PuzzleSolverLayout(image);
+    setCentralWidget(puzzleLayout);
 
 
 
     // interactivePieceLayout = new interactivePiece(pieces);
-    setCentralWidget(interactivePieceLayout);
+    // setCentralWidget(interactivePieceLayout);
 }
