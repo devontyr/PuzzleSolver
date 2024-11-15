@@ -12,7 +12,6 @@ class PuzzleSolverLayout: public QWidget
     QList<QImage> pieces;
 
     bool isShadeOfWhite(const QRgb &color);
-    QImage processImage(QImage& image);
     void pieceSeperator(QImage& image);
 
 public:
