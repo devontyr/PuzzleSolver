@@ -21,5 +21,7 @@ private:
     vector<puzzlepiece> unfitted_internal_pieces;
     vector<puzzlepiece> unfitted_border_pieces;
     int THRESHOLD;
+    int total_number_pieces;
 };
+
 #endif // PUZZLE_SOLVER_H
