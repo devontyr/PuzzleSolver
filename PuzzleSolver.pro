@@ -15,8 +15,7 @@ SOURCES += \
     puzzlesolverlayout.cpp \
     puzzlepiece.cpp \
     interactivepiece.cpp \
-    puzzle_solver.cpp \
-    puzzlepiece.cpp
+    puzzle_solver.cpp
 
 HEADERS += \
     imageviewer.h \
