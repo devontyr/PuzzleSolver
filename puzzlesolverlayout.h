@@ -7,6 +7,12 @@ class PuzzleSolverLayout: public QWidget
 {
     Q_OBJECT
     QImage image;
+    QGraphicsScene* scene;
+    QGraphicsView *solverInterface;
+    QList<QImage> pieces;
+
+    bool isShadeOfWhite(const QRgb &color);
+    void pieceSeperator(QImage& image);
 
 public:
     explicit PuzzleSolverLayout(const QImage &_image);

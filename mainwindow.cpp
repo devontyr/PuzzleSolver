@@ -28,12 +28,11 @@ MainWindow::MainWindow(QWidget *parent)
     lastDir = settings.value("lastDir", "").toString();
 
 
-
 }
 
 MainWindow::~MainWindow() {
     QSettings settings("Group", "puzzle solver");
-    lastDir = settings.value("lastDir", "").toString();
+    lastDir = settings.value("lastDir", lastDir).toString();
 }
 
 int Waiter::count = 0;
@@ -57,7 +56,7 @@ Waiter::~Waiter(){
 }
 
 void MainWindow::openImageSlot() {
-    //open file as pixmap and put on screen
+    //open file as QImage and put on screen
     QString fName = QFileDialog::getOpenFileName(this, "select image file", lastDir, "image files (*.png *.jpg *.bmp *.jpeg)");
     if (fName.isEmpty()) return;
     QImage image(fName);
@@ -65,6 +64,8 @@ void MainWindow::openImageSlot() {
 
     lastDir = QFileInfo(fName).absolutePath(); //update last directory
 
+    //save the center of the original image
+    orgImageCenter = QPoint(image.height()/2, image.width()/2);
 
     // puzzleLayout = new PuzzleSolverLayout(image);
     // setCentralWidget(puzzleLayout);

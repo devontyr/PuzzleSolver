@@ -40,8 +40,8 @@ void interactivePiece::mouseReleaseEvent(QMouseEvent *evt) {
         return;
     }
 
-    const int snapRadius = 60; // like a threshhold for how far out a piece will snap
-    const int pieceSize = 52; // replace with the piece's actual size (maybe plus a tiny bit of room)
+    const int snapRadius = 200; // like a threshhold for how far out a piece will snap
+    const int pieceSize = 260; // replace with the piece's actual size (maybe plus a tiny bit of room)
     QPointF itemPos = item->pos();
     QRectF searchArea(itemPos.x() - snapRadius, itemPos.y() - snapRadius, snapRadius * 2, snapRadius * 2);
     QGraphicsItem *closestItem = nullptr;

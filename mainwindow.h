@@ -10,7 +10,9 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     QString lastDir;
     PuzzleSolverLayout *puzzleLayout;
-    interactivePiece* interactivePieceLayout;
+    QImage processedImage;
+    QPoint orgImageCenter;
+    // interactivePiece* interactivePieceLayout;
 
 public:
     MainWindow(QWidget *parent = nullptr);
