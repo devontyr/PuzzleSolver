@@ -65,7 +65,28 @@ bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
 }
 
 bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
-    return true;
+    int redCount = 0;
+    if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= processedImage->width() - 2) || (pixelY >= processedImage->height() - 2)){
+        return false;
+    }
+
+    QList<QRgb> surroundingPix(25);
+
+    int index = 0;
+    for (int row = -2; row <= 2; ++row){
+        for (int col = -2; col <= 2; ++col){
+            surroundingPix[index] = processedImage->pixel(pixelX + col, pixelY + row);
+            ++index;
+        }
+    }
+
+    for (int i = 0; i < 25; ++i){
+        if (qRed(surroundingPix[i]) == 255){
+            ++redCount;
+        }
+    }
+
+    return (redCount >= 13);
 }
 
 void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage& redImage) {
