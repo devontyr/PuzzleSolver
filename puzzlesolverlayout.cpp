@@ -6,7 +6,8 @@
 
 PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     QImage imageToProcess = image.copy();
-    pieceSeperator(imageToProcess);
+    //AJ method HERE to turn imageToProcess into redImage
+    pieceSeperator(image, redImage);
 
     // LAYOUTS
     // set the horizontal box
@@ -66,7 +67,7 @@ bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
 
 bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
     int redCount = 0;
-    if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= processedImage->width() - 2) || (pixelY >= processedImage->height() - 2)){
+    if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= imageToProcess->width() - 2) || (pixelY >= imageToProcess->height() - 2)){
         return false;
     }
 
@@ -75,7 +76,7 @@ bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
     int index = 0;
     for (int row = -2; row <= 2; ++row){
         for (int col = -2; col <= 2; ++col){
-            surroundingPix[index] = processedImage->pixel(pixelX + col, pixelY + row);
+            surroundingPix[index] = imageToProcess->pixel(pixelX + col, pixelY + row);
             ++index;
         }
     }
