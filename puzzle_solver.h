@@ -9,7 +9,7 @@ public:
     puzzle_solver(vector<puzzlepiece>& internal_pieces, vector<puzzlepiece>& border_pieces);
     void fit_internal_piece(pair<int, int> pos);
     void solve();
-    int calculate_similarity(const vector<pair<int, int>>& edge1, const vector<pair<int, int>>& edge2);
+    double calculate_similarity(const vector<pair<int, int>>& edge1, const vector<pair<int, int>>& edge2);
     void fit_top_row(vector<pair<int, int>>& border_edge);
     void fit_right_col(vector<pair<int, int>>& border_edge);
     void fit_bottom_row(vector<pair<int, int>>& border_edge);
