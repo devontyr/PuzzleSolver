@@ -12,12 +12,18 @@ public:
     explicit interactivePiece(const QList<QImage> &pieces, QWidget *parent = nullptr);
 
 protected:
+    void keyPressEvent(QKeyEvent *evt) override;
     void mousePressEvent(QMouseEvent *evt) override;
     void mouseReleaseEvent(QMouseEvent *evt) override;
 
 private:
     QGraphicsScene *scene;
     int currentZ;
+    QGraphicsItem *lastSelectedItem;
+    double scale;
+    double snapDistance;
+    double pieceScan;
 };
+
 
 #endif // INTERACTIVEPIECE_H
