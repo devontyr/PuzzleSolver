@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
+// 45 40 48
+
 MainWindow::~MainWindow() {
     QSettings settings("Group", "puzzle solver");
     lastDir = settings.value("lastDir", lastDir).toString();
@@ -44,25 +46,25 @@ bool MainWindow::isShadeOfWhite(const QRgb &color) {
 
     int combo = r + g + b;
 
-    if (combo <= 600 && combo >=200){
-        if ((qAbs(b-r) + qAbs(b-g) +qAbs(r-g) > 28) && (b > r || b > g)){
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-    else{
+    if (combo < 100){
         return true;
+    }
+
+    if ((qAbs(r - 45) <= 15) && (qAbs(g - 40) <= 15) && (qAbs(b - 48) <= 15)){
+        return true;
+    }
+    else {
+        return false;
     }
 }
 
 bool MainWindow::isSurroundedRed(int pixelX, int pixelY){
     int redCount = 0;
-    if ((pixelX == 0) || (pixelY == 0) || (pixelX == processedImage->width() - 1) || (pixelY == processedImage->height() - 1)){
+    if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= processedImage->width() - 2) || (pixelY >= processedImage->height() - 2)){
         return false;
     }
 
+    /*
     QColor pixel1 = processedImage->pixel(pixelX - 1, pixelY - 1);
     QColor pixel2 = processedImage->pixel(pixelX, pixelY - 1);
     QColor pixel3 = processedImage->pixel(pixelX + 1, pixelY - 1);
@@ -73,100 +75,118 @@ bool MainWindow::isSurroundedRed(int pixelX, int pixelY){
     QColor pixel6 = processedImage->pixel(pixelX - 1, pixelY + 1);
     QColor pixel7 = processedImage->pixel(pixelX, pixelY + 1);
     QColor pixel8 = processedImage->pixel(pixelX + 1, pixelY + 1);
+    */
+
+    QColor pixel1 = processedImage->pixel(pixelX - 2, pixelY - 2);
+    QColor pixel2 = processedImage->pixel(pixelX - 1, pixelY - 2);
+    QColor pixel3 = processedImage->pixel(pixelX, pixelY - 2);
+    QColor pixel4 = processedImage->pixel(pixelX + 1, pixelY - 2);
+    QColor pixel5 = processedImage->pixel(pixelX + 2, pixelY - 2);
+
+    QColor pixel6 = processedImage->pixel(pixelX - 2, pixelY - 1);
+    QColor pixel7 = processedImage->pixel(pixelX - 1, pixelY - 1);
+    QColor pixel8 = processedImage->pixel(pixelX, pixelY - 1);
+    QColor pixel9 = processedImage->pixel(pixelX + 1, pixelY - 1);
+    QColor pixel10 = processedImage->pixel(pixelX + 2, pixelY - 1);
+
+    QColor pixel11 = processedImage->pixel(pixelX - 2, pixelY);
+    QColor pixel12 = processedImage->pixel(pixelX - 1, pixelY);
+    QColor pixel13 = processedImage->pixel(pixelX, pixelY);
+    QColor pixel14 = processedImage->pixel(pixelX + 1, pixelY);
+    QColor pixel15 = processedImage->pixel(pixelX + 2, pixelY);
+
+    QColor pixel16 = processedImage->pixel(pixelX - 2, pixelY + 1);
+    QColor pixel17 = processedImage->pixel(pixelX - 1, pixelY + 1);
+    QColor pixel18 = processedImage->pixel(pixelX, pixelY + 1);
+    QColor pixel19 = processedImage->pixel(pixelX + 1, pixelY + 1);
+    QColor pixel20 = processedImage->pixel(pixelX + 2, pixelY + 1);
+
+    QColor pixel21 = processedImage->pixel(pixelX - 2, pixelY + 2);
+    QColor pixel22 = processedImage->pixel(pixelX - 1, pixelY + 2);
+    QColor pixel23 = processedImage->pixel(pixelX, pixelY + 2);
+    QColor pixel24 = processedImage->pixel(pixelX + 1, pixelY + 2);
+    QColor pixel25 = processedImage->pixel(pixelX + 2, pixelY + 2);
 
 
     if (pixel1.red() == 255){
         ++redCount;
     }
-
     if (pixel2.red() == 255){
         ++redCount;
     }
-
     if (pixel3.red() == 255){
         ++redCount;
     }
-
     if (pixel4.red() == 255){
         ++redCount;
     }
-
     if (pixel5.red() == 255){
         ++redCount;
     }
-
     if (pixel6.red() == 255){
         ++redCount;
     }
-
     if (pixel7.red() == 255){
         ++redCount;
     }
-
     if (pixel8.red() == 255){
         ++redCount;
     }
+    if (pixel9.red() == 255){
+        ++redCount;
+    }
+    if (pixel10.red() == 255){
+        ++redCount;
+    }
+    if (pixel11.red() == 255){
+        ++redCount;
+    }
+    if (pixel12.red() == 255){
+        ++redCount;
+    }
+    if (pixel13.red() == 255){
+        ++redCount;
+    }
+    if (pixel14.red() == 255){
+        ++redCount;
+    }
+    if (pixel15.red() == 255){
+        ++redCount;
+    }
+    if (pixel16.red() == 255){
+        ++redCount;
+    }
+    if (pixel17.red() == 255){
+        ++redCount;
+    }
+    if (pixel18.red() == 255){
+        ++redCount;
+    }
+    if (pixel19.red() == 255){
+        ++redCount;
+    }
+    if (pixel20.red() == 255){
+        ++redCount;
+    }
+    if (pixel21.red() == 255){
+        ++redCount;
+    }
+    if (pixel22.red() == 255){
+        ++redCount;
+    }
+    if (pixel23.red() == 255){
+        ++redCount;
+    }
+    if (pixel24.red() == 255){
+        ++redCount;
+    }
+    if (pixel25.red() == 255){
+        ++redCount;
+    }
 
-    return (redCount >= 5);
+    return (redCount >= 13);
+
 }
-
-
-bool MainWindow::isSurroundedBlack(int pixelX, int pixelY){
-    int blackCount = 0;
-    if ((pixelX == 0) || (pixelY == 0) || (pixelX == processedImage->width() - 1) || (pixelY == processedImage->height() - 1)){
-        return false;
-    }
-
-    QColor pixel1 = processedImage->pixel(pixelX - 1, pixelY - 1);
-    QColor pixel2 = processedImage->pixel(pixelX, pixelY - 1);
-    QColor pixel3 = processedImage->pixel(pixelX + 1, pixelY - 1);
-
-    QColor pixel4 = processedImage->pixel(pixelX -1, pixelY);
-    QColor pixel5 = processedImage->pixel(pixelX + 1, pixelY );
-
-    QColor pixel6 = processedImage->pixel(pixelX - 1, pixelY + 1);
-    QColor pixel7 = processedImage->pixel(pixelX, pixelY + 1);
-    QColor pixel8 = processedImage->pixel(pixelX + 1, pixelY + 1);
-
-
-    if (pixel1.red() == 0){
-        ++blackCount;
-    }
-
-    if (pixel2.red() == 0){
-        ++blackCount;
-    }
-
-    if (pixel3.red() == 0){
-        ++blackCount;
-    }
-
-    if (pixel4.red() == 0){
-        ++blackCount;
-    }
-
-    if (pixel5.red() == 0){
-        ++blackCount;
-    }
-
-    if (pixel6.red() == 0){
-        ++blackCount;
-    }
-
-    if (pixel7.red() == 0){
-        ++blackCount;
-    }
-
-    if (pixel8.red() == 0){
-        ++blackCount;
-    }
-
-    return (blackCount >= 6);
-}
-
-
-
-
 
 void MainWindow::openImageSlot() {
     //open file as QImage and put on screen
@@ -198,12 +218,9 @@ void MainWindow::openImageSlot() {
         }
     }
 
+    /*
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
-
-            if(isSurroundedBlack(x,y)){
-                processedImage->setPixelColor(QPoint(x,y), Qt::black); //mark the pixel as red
-            }
             if(isSurroundedRed(x, y)){
                 processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
             }
@@ -212,16 +229,28 @@ void MainWindow::openImageSlot() {
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
-
-            if(isSurroundedBlack(x,y)){
-                processedImage->setPixelColor(QPoint(x,y), Qt::black); //mark the pixel as red
-            }
             if(isSurroundedRed(x, y)){
                 processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
             }
         }
     }
 
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            if(isSurroundedRed(x, y)){
+                processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
+            }
+        }
+    }
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            if(isSurroundedRed(x, y)){
+                processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
+            }
+        }
+    }
+    */
 
     puzzleLayout = new PuzzleSolverLayout(*processedImage);
     setCentralWidget(puzzleLayout);

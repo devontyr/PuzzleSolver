@@ -19,7 +19,6 @@ public:
 
     bool isShadeOfWhite(const QRgb &color);
     bool isSurroundedRed(int pixelX, int pixelY);
-    bool isSurroundedBlack(int pixelX, int pixelY);
 
 public slots:
     void openImageSlot();
