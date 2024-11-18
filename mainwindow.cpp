@@ -64,6 +64,22 @@ bool MainWindow::isSurroundedRed(int pixelX, int pixelY){
         return false;
     }
 
+    QList<QRgb> surroundingPix(25);
+
+    int index = 0;
+    for (int row = -2; row <= 2; ++row){
+        for (int col = -2; col <= 2; ++col){
+            surroundingPix[index] = processedImage->pixel(pixelX + col, pixelY + row);
+            ++index;
+        }
+    }
+
+    for (int i = 0; i < 25; ++i){
+        if (qRed(surroundingPix[i]) == 255){
+            ++redCount;
+        }
+    }
+
     /*
     QColor pixel1 = processedImage->pixel(pixelX - 1, pixelY - 1);
     QColor pixel2 = processedImage->pixel(pixelX, pixelY - 1);
@@ -77,6 +93,8 @@ bool MainWindow::isSurroundedRed(int pixelX, int pixelY){
     QColor pixel8 = processedImage->pixel(pixelX + 1, pixelY + 1);
     */
 
+
+    /*
     QColor pixel1 = processedImage->pixel(pixelX - 2, pixelY - 2);
     QColor pixel2 = processedImage->pixel(pixelX - 1, pixelY - 2);
     QColor pixel3 = processedImage->pixel(pixelX, pixelY - 2);
@@ -183,6 +201,7 @@ bool MainWindow::isSurroundedRed(int pixelX, int pixelY){
     if (pixel25.red() == 255){
         ++redCount;
     }
+    */
 
     return (redCount >= 13);
 
@@ -218,14 +237,6 @@ void MainWindow::openImageSlot() {
         }
     }
 
-    /*
-    for (int y = 0; y < image.height(); ++y) {
-        for (int x = 0; x < image.width(); ++x) {
-            if(isSurroundedRed(x, y)){
-                processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
-            }
-        }
-    }
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
@@ -235,22 +246,6 @@ void MainWindow::openImageSlot() {
         }
     }
 
-    for (int y = 0; y < image.height(); ++y) {
-        for (int x = 0; x < image.width(); ++x) {
-            if(isSurroundedRed(x, y)){
-                processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
-            }
-        }
-    }
-
-    for (int y = 0; y < image.height(); ++y) {
-        for (int x = 0; x < image.width(); ++x) {
-            if(isSurroundedRed(x, y)){
-                processedImage->setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
-            }
-        }
-    }
-    */
 
     puzzleLayout = new PuzzleSolverLayout(*processedImage);
     setCentralWidget(puzzleLayout);
