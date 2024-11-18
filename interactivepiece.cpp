@@ -52,7 +52,11 @@ void interactivePiece::keyPressEvent(QKeyEvent *evt) {
         scale *= (evt->key() == Qt::Key_Equal) ? 2.0 : 0.5;
         snapDistance *= scale; pieceScan *= scale;
         for (QGraphicsItem *item : scene -> items()) {
+            QPointF loc = item->pos();
+            loc.setX(loc.x() * scale);
+            loc.setY(loc.y() * scale);
             item->setScale(scale);
+            item->setPos(loc);
         }
     }
     QGraphicsView::keyPressEvent(evt);
