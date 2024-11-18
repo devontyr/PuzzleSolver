@@ -12,7 +12,9 @@ class PuzzleSolverLayout: public QWidget
     QList<QImage> pieces;
 
     bool isShadeOfWhite(const QRgb &color);
-    void pieceSeperator(QImage& image);
+    bool isShadeOfBlack(const QRgb &color);
+    bool isSurroundedRed(int pixelX, int pixelY);
+    void pieceSeperator(QImage& image, QImage& redImage);
 
 public:
     explicit PuzzleSolverLayout(const QImage &_image);

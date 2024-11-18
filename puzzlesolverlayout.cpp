@@ -44,12 +44,37 @@ bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
     return r >= minBrightness && g >= minBrightness && b >= minBrightness;
 }
 
-void PuzzleSolverLayout::pieceSeperator(QImage& image) {
+bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
+    //values are between 0-255
+    int r = qRed(color);
+    int g = qGreen(color);
+    int b = qBlue(color);
+
+    int combo = r + g + b;
+
+    if (combo < 100){
+        return true;
+    }
+
+    if ((qAbs(r - 45) <= 15) && (qAbs(g - 40) <= 15) && (qAbs(b - 48) <= 15)){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
+    return true;
+}
+
+void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage& redImage) {
     QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QSet<QPoint> toDo;
     int minPieceSize = 30000;
     int C = image.width(), R = image.height();
     QRgb white = 0xffffffff;
+    QRgb red = 0xffff0000;
 
 
     // loop through possible start positions to find the beginning of a piece
@@ -64,7 +89,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
 
             // add first valid pixel to the toDo
             QPoint curPoint = QPoint(iStartCol, iStartRow);
-            if (!isShadeOfWhite(image.pixel(curPoint))) {
+            if (redImage.pixel(curPoint) == red) {
                 toDo.insert(curPoint);
             } else {
                 continue;
@@ -77,7 +102,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
 
                 QRgb orgColor = image.pixel(topPoint);
 
-                image.setPixel(topPoint, white); // make it white to avoid duplicate processes
+                redImage.setPixel(topPoint, white); // make it white to avoid duplicate processes
 
                 // add it to the current puzzle piece
                 piece.setPixel(topPoint, orgColor);
@@ -92,10 +117,10 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
                 QPoint rNeighbor = QPoint(topPoint.x() + 1, topPoint.y());
                 QPoint tNeighbor = QPoint(topPoint.x(), topPoint.y() + 1);
                 QPoint bNeighbor = QPoint(topPoint.x(), topPoint.y() - 1);
-                if (image.valid(lNeighbor) && !isShadeOfWhite(image.pixel(lNeighbor))) toDo.insert(lNeighbor);
-                if (image.valid(rNeighbor) && !isShadeOfWhite(image.pixel(rNeighbor))) toDo.insert(rNeighbor);
-                if (image.valid(tNeighbor) && !isShadeOfWhite(image.pixel(tNeighbor))) toDo.insert(tNeighbor);
-                if (image.valid(bNeighbor) && !isShadeOfWhite(image.pixel(bNeighbor))) toDo.insert(bNeighbor);
+                if (redImage.valid(lNeighbor) && redImage.pixel(lNeighbor) == red) toDo.insert(lNeighbor);
+                if (redImage.valid(rNeighbor) && redImage.pixel(rNeighbor) == red) toDo.insert(rNeighbor);
+                if (redImage.valid(tNeighbor) && redImage.pixel(tNeighbor) == red) toDo.insert(tNeighbor);
+                if (redImage.valid(bNeighbor) && redImage.pixel(bNeighbor) == red) toDo.insert(bNeighbor);
             }
             // once toDo empty, we have found a full piece
             // check that it has enough pixels and then add that pieces to the collection of pieces
