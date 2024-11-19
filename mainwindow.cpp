@@ -55,6 +55,10 @@ Waiter::~Waiter(){
     }
 }
 
+
+/*
+Handles and processes a given file into puzzle pieces when user opens any image
+*/
 void MainWindow::openImageSlot() {
     //open file as QImage and put on screen
     QString fName = QFileDialog::getOpenFileName(this, "select image file", lastDir, "image files (*.png *.jpg *.bmp *.jpeg)");
@@ -69,9 +73,4 @@ void MainWindow::openImageSlot() {
 
     puzzleLayout = new PuzzleSolverLayout(image);
     setCentralWidget(puzzleLayout);
-
-
-
-    // interactivePieceLayout = new interactivePiece(pieces);
-    // setCentralWidget(interactivePieceLayout);
 }
