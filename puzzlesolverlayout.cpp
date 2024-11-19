@@ -28,6 +28,32 @@ PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     mainLayout->addWidget(interactivePieceLayout);
 }
 
+void PuzzleSolverLayout::processImage(QImage &image){
+    redImage = QImage(image.width(), image.height(), QImage::Format_RGB32);
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRgb pixel = image.pixel(x, y);
+            if (!isShadeOfWhite(pixel)) {
+                redImage.setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as a puzzle piece
+            }
+            else{
+                redImage.setPixelColor(QPoint(x,y), Qt::black); //mark the pixel as a puzzle piece
+
+            }
+        }
+    }
+
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            if(isSurroundedRed(x, y)){
+                redImage.setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
+            }
+        }
+    }
+}
+
 bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
     int threshold = 10; // larger num if we want to accept more gray colors as "white"
     int minBrightness = 169; // smaller num allows more gray colors as "white"
@@ -67,7 +93,7 @@ bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
 
 bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
     int redCount = 0;
-    if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= imageToProcess->width() - 2) || (pixelY >= imageToProcess->height() - 2)){
+    if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= redImage.width() - 2) || (pixelY >= redImage.height() - 2)){
         return false;
     }
 
@@ -76,7 +102,7 @@ bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
     int index = 0;
     for (int row = -2; row <= 2; ++row){
         for (int col = -2; col <= 2; ++col){
-            surroundingPix[index] = imageToProcess->pixel(pixelX + col, pixelY + row);
+            surroundingPix[index] = redImage.pixel(pixelX + col, pixelY + row);
             ++index;
         }
     }
@@ -90,7 +116,7 @@ bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
     return (redCount >= 13);
 }
 
-void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage& redImage) {
+void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
     QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QSet<QPoint> toDo;
     int minPieceSize = 30000;
