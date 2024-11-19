@@ -4,9 +4,15 @@
 #include <QtWidgets>
 #include <imageviewer.h>
 
+/*
+Main method to process an image into seperate and display all puzzle pieces
+    input: an image
+    output: displays all puzzle pieces and org image on the screen
+*/
 PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     QImage imageToProcess = image.copy();
-    pieceSeperator(imageToProcess);
+    processImage(imageToProcess);
+    pieceSeperator(image, redImage);
 
     // LAYOUTS
     // set the horizontal box
@@ -27,6 +33,42 @@ PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     mainLayout->addWidget(interactivePieceLayout);
 }
 
+/*
+Pre-processes an image red. Looks at the 8 surrounding pixels for each pixel to fill in unexpected gaps
+    input: image
+    output: updates redImage to a processed version
+*/
+void PuzzleSolverLayout::processImage(QImage &image){
+    redImage = QImage(image.width(), image.height(), QImage::Format_RGB32);
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            QRgb pixel = image.pixel(x, y);
+            if (!isShadeOfBlack(pixel)) {
+                redImage.setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as a puzzle piece
+            }
+            else{
+                redImage.setPixelColor(QPoint(x,y), Qt::black); //mark the pixel as a puzzle piece
+
+            }
+        }
+    }
+
+
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            if(isSurroundedRed(x, y)){
+                redImage.setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as red
+            }
+        }
+    }
+}
+
+/*
+Helper method to check if a color is part of the white background
+    input: a color
+    output: true or false
+*/
 bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
     int threshold = 10; // larger num if we want to accept more gray colors as "white"
     int minBrightness = 169; // smaller num allows more gray colors as "white"
@@ -44,12 +86,76 @@ bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
     return r >= minBrightness && g >= minBrightness && b >= minBrightness;
 }
 
-void PuzzleSolverLayout::pieceSeperator(QImage& image) {
+/*
+Helper method to check if a color is part of the black background
+    input: a color
+    output: true or false
+*/
+bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
+    //values are between 0-255
+    int r = qRed(color);
+    int g = qGreen(color);
+    int b = qBlue(color);
+
+    int combo = r + g + b;
+
+    if (combo < 100){
+        return true;
+    }
+
+    if ((qAbs(r - 45) <= 15) && (qAbs(g - 40) <= 15) && (qAbs(b - 48) <= 15)){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+/*
+Helper method to checks if surrounding 8 pixels of a given pixel coord are red
+    input: a color
+    output: true or false
+*/
+bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
+    int redCount = 0;
+    if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= redImage.width() - 2) || (pixelY >= redImage.height() - 2)){
+        return false;
+    }
+
+    QList<QRgb> surroundingPix(25);
+
+    int index = 0;
+    for (int row = -2; row <= 2; ++row){
+        for (int col = -2; col <= 2; ++col){
+            surroundingPix[index] = redImage.pixel(pixelX + col, pixelY + row);
+            ++index;
+        }
+    }
+
+    for (int i = 0; i < 25; ++i){
+        if (qRed(surroundingPix[i]) == 255){
+            ++redCount;
+        }
+    }
+
+    return (redCount >= 13);
+}
+
+/*
+BFS on the redImage to cut out each individual puzzle piece.
+    input: image, redImage
+    output:
+            PuzzlePixels -- list of QPoint pixels for each piece
+            PuzzlePieces -- a master list of lists of QPoints (made up of many PuzzlePixels)
+            pieces -- a list of QImage puzzle pieces
+*/
+void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
     QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QSet<QPoint> toDo;
     int minPieceSize = 30000;
     int C = image.width(), R = image.height();
     QRgb white = 0xffffffff;
+    QRgb red = 0xffff0000;
 
 
     // loop through possible start positions to find the beginning of a piece
@@ -64,7 +170,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
 
             // add first valid pixel to the toDo
             QPoint curPoint = QPoint(iStartCol, iStartRow);
-            if (!isShadeOfWhite(image.pixel(curPoint))) {
+            if (redImage.pixel(curPoint) == red) {
                 toDo.insert(curPoint);
             } else {
                 continue;
@@ -77,7 +183,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
 
                 QRgb orgColor = image.pixel(topPoint);
 
-                image.setPixel(topPoint, white); // make it white to avoid duplicate processes
+                redImage.setPixel(topPoint, white); // make it white to avoid duplicate processes
 
                 // add it to the current puzzle piece
                 piece.setPixel(topPoint, orgColor);
@@ -92,10 +198,10 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image) {
                 QPoint rNeighbor = QPoint(topPoint.x() + 1, topPoint.y());
                 QPoint tNeighbor = QPoint(topPoint.x(), topPoint.y() + 1);
                 QPoint bNeighbor = QPoint(topPoint.x(), topPoint.y() - 1);
-                if (image.valid(lNeighbor) && !isShadeOfWhite(image.pixel(lNeighbor))) toDo.insert(lNeighbor);
-                if (image.valid(rNeighbor) && !isShadeOfWhite(image.pixel(rNeighbor))) toDo.insert(rNeighbor);
-                if (image.valid(tNeighbor) && !isShadeOfWhite(image.pixel(tNeighbor))) toDo.insert(tNeighbor);
-                if (image.valid(bNeighbor) && !isShadeOfWhite(image.pixel(bNeighbor))) toDo.insert(bNeighbor);
+                if (redImage.valid(lNeighbor) && redImage.pixel(lNeighbor) == red) toDo.insert(lNeighbor);
+                if (redImage.valid(rNeighbor) && redImage.pixel(rNeighbor) == red) toDo.insert(rNeighbor);
+                if (redImage.valid(tNeighbor) && redImage.pixel(tNeighbor) == red) toDo.insert(tNeighbor);
+                if (redImage.valid(bNeighbor) && redImage.pixel(bNeighbor) == red) toDo.insert(bNeighbor);
             }
             // once toDo empty, we have found a full piece
             // check that it has enough pixels and then add that pieces to the collection of pieces
