@@ -4,9 +4,14 @@
 #include <QtWidgets>
 #include <imageviewer.h>
 
+/*
+Main method to process an image into seperate and display all puzzle pieces
+    input: an image
+    output: displays all puzzle pieces and org image on the screen
+*/
 PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     QImage imageToProcess = image.copy();
-    //AJ method HERE to turn imageToProcess into redImage
+    processImage(imageToProcess);
     pieceSeperator(image, redImage);
 
     // LAYOUTS
@@ -28,13 +33,18 @@ PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     mainLayout->addWidget(interactivePieceLayout);
 }
 
+/*
+Pre-processes an image red. Looks at the 8 surrounding pixels for each pixel to fill in unexpected gaps
+    input: image
+    output: updates redImage to a processed version
+*/
 void PuzzleSolverLayout::processImage(QImage &image){
     redImage = QImage(image.width(), image.height(), QImage::Format_RGB32);
 
     for (int y = 0; y < image.height(); ++y) {
         for (int x = 0; x < image.width(); ++x) {
             QRgb pixel = image.pixel(x, y);
-            if (!isShadeOfWhite(pixel)) {
+            if (!isShadeOfBlack(pixel)) {
                 redImage.setPixelColor(QPoint(x,y), Qt::red); //mark the pixel as a puzzle piece
             }
             else{
@@ -54,6 +64,11 @@ void PuzzleSolverLayout::processImage(QImage &image){
     }
 }
 
+/*
+Helper method to check if a color is part of the white background
+    input: a color
+    output: true or false
+*/
 bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
     int threshold = 10; // larger num if we want to accept more gray colors as "white"
     int minBrightness = 169; // smaller num allows more gray colors as "white"
@@ -71,6 +86,11 @@ bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
     return r >= minBrightness && g >= minBrightness && b >= minBrightness;
 }
 
+/*
+Helper method to check if a color is part of the black background
+    input: a color
+    output: true or false
+*/
 bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
     //values are between 0-255
     int r = qRed(color);
@@ -91,6 +111,11 @@ bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
     }
 }
 
+/*
+Helper method to checks if surrounding 8 pixels of a given pixel coord are red
+    input: a color
+    output: true or false
+*/
 bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
     int redCount = 0;
     if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= redImage.width() - 2) || (pixelY >= redImage.height() - 2)){
@@ -116,6 +141,14 @@ bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
     return (redCount >= 13);
 }
 
+/*
+BFS on the redImage to cut out each individual puzzle piece.
+    input: image, redImage
+    output:
+            PuzzlePixels -- list of QPoint pixels for each piece
+            PuzzlePieces -- a master list of lists of QPoints (made up of many PuzzlePixels)
+            pieces -- a list of QImage puzzle pieces
+*/
 void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
     QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QSet<QPoint> toDo;
