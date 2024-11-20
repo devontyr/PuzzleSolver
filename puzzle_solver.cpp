@@ -5,13 +5,10 @@ puzzle_solver::puzzle_solver(vector<puzzlepiece>& internal_pieces, vector<puzzle
 
 double puzzle_solver::calculate_similarity(const vector<pair<int, int>>& edge1, const vector<pair<int, int>>& edge2){
 
-    int n = edge1.size(), m = edge2.size();
     double similarity = 0;
-    for (int idx = 0; idx < n; ++idx){
-        pair<int, int> loc = edge1[idx];
+    for (const pair<int, int>& loc : edge1){
         double min_sim = INT_MAX;
-        for (int second_idx = 0; second_idx < m; ++second_idx){
-            pair<int, int> edgetwo_loc = edge2[second_idx];
+        for (const pair<int, int>& edgetwo_loc : edge2){
             double this_sim = sqrt((loc.first - edgetwo_loc.first)*(loc.first - edgetwo_loc.first) + (loc.second - edgetwo_loc.second)*(loc.second - edgetwo_loc.second));
             if (this_sim < min_sim){
                 min_sim = this_sim;
