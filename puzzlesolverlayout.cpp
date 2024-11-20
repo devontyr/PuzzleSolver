@@ -11,7 +11,7 @@ Main method to process an image into seperate and display all puzzle pieces
 */
 PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     QImage imageToProcess = image.copy();
-    processImage(imageToProcess);
+    processImage(image);
     pieceSeperator(image, redImage);
 
     // LAYOUTS
