@@ -146,11 +146,9 @@ bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
 BFS on the redImage to cut out each individual puzzle piece.
     input: image, redImage
     output:
-            PuzzlePixels -- list of QPoint pixels for each piece
-            PuzzlePieces -- a master list of lists of QPoints (made up of many PuzzlePixels)
             pieces -- a list of QImage puzzle pieces
 */
-void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
+void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
     //QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QList<QPoint> toDo;
     toDo.reserve(100000);
@@ -216,4 +214,35 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
             }
         }
     }
+}
+
+/*
+Stores each puzzle piece found as a binary matrix.
+Takes the list of QImage puzzle pieces and turns it into a list of matricies
+*/
+void PuzzleSolverLayout::pieceOutput(){
+    for (int iImg=0; iImg < pieces.size(); iImg++) {
+        pieceMatricies.append(imageToMatrix(pieces[iImg]));
+    }
+}
+
+/*
+Helper function to turns each individual QImage into a matrix of 0's for background and 1's for peices
+    input: QImage of a piece
+    output: Matrix representaion of that piece
+*/
+QVector<QVector<int>> PuzzleSolverLayout::imageToMatrix(QImage &pieceImg) {
+    int C = pieceImg.width(), R = pieceImg.height();
+    QVector<QVector<int>> matrix(R, QVector<int>(C, 0));
+
+    for (int iY=0; iY < R; ++iY) {
+        for (int iX=0; iX < C; ++iX) {
+            // QUESTION HERE -- should we be storing redImage so that we can use red instead of isShadeOfBlack ?
+            QRgb pix = image.pixel(iX, iY);
+            if (!isShadeOfBlack(pix)) {
+                matrix[iX][iY] = 1;
+            }
+        }
+    }
+    return matrix;
 }
