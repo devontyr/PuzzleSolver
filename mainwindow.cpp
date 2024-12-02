@@ -223,6 +223,15 @@ void MainWindow::processSlot() {
             yOffset += img.height();
         }
 
+        if (placeholder && placeholder->layout()) {
+            QLayout *layout = placeholder->layout();
+            while (QLayoutItem *item = layout->takeAt(0)) {
+                delete item->widget();
+                delete item;
+            }
+            delete layout;
+        }
+
         if (puzzleLayout) delete puzzleLayout;
         puzzleLayout = new PuzzleSolverLayout(stitchedImage);
         mainLayout->addWidget(puzzleLayout);
