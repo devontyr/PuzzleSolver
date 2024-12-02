@@ -9,25 +9,102 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle("Puzzle Solver");
 
-    //MENU BAR
-    QAction *openImageAct = new QAction("Open Image");
-    connect(openImageAct, &QAction::triggered, this, &MainWindow::openImageSlot);
-    openImageAct->setShortcut(Qt::CTRL | Qt::Key_O); //slot triggered with ctrl O key
+    resize(500, 300);
 
-    QAction *solvePuzzleAct = new QAction("Solve Puzzle");
-    connect(solvePuzzleAct, &QAction::triggered, this, &MainWindow::openImageSlot);
-    solvePuzzleAct->setShortcut(Qt::CTRL | Qt::Key_S); //slot triggered with ctrl S key
+    QWidget *center = new QWidget();
+    setCentralWidget(center);
 
+    QAction *uploadAct = new QAction("Open Image");
+    QPushButton *uploadButton = new QPushButton("Open Image");
+    connect(uploadButton, &QPushButton::clicked, uploadAct, &QAction::trigger);
+    connect(uploadAct, &QAction::triggered, this, &MainWindow::openImageSlot);
+    uploadAct->setShortcut(Qt::CTRL | Qt::Key_U);
+
+    addImageAct = new QAction("Add Image");
+    addImageButton = new QPushButton("Add Image");
+    connect(addImageButton, &QPushButton::clicked, addImageAct, &QAction::trigger);
+    connect(addImageAct, &QAction::triggered, this, &MainWindow::addImageSlot);
+    addImageAct->setShortcut(Qt::CTRL | Qt::Key_I);
+    addImageAct->setEnabled(false);
+    addImageButton->setEnabled(false);
+
+    processAct = new QAction("Process");
+    processButton = new QPushButton("Process");
+    connect(processButton, &QPushButton::clicked, processAct, &QAction::trigger);
+    connect(processAct, &QAction::triggered, this, &MainWindow::processSlot);
+    processAct->setShortcut(Qt::CTRL | Qt::Key_P);
+    processAct->setEnabled(false);
+    processButton->setEnabled(false);
+
+    solvePuzzleAct = new QAction("Solve");
+    solveButton = new QPushButton("Solve");
+    connect(solveButton, &QPushButton::clicked, solvePuzzleAct, &QAction::trigger);
+    connect(solvePuzzleAct, &QAction::triggered, this, &MainWindow::solveSlot);
+    solvePuzzleAct->setShortcut(Qt::CTRL | Qt::Key_S);
+    solvePuzzleAct->setEnabled(false);
+    solveButton->setEnabled(false);
+
+    hintAct = new QAction("Show Hint");
+    hintButton = new QPushButton("Show Hint");
+    connect(hintButton, &QPushButton::clicked, hintAct, &QAction::trigger);
+    connect(hintAct, &QAction::triggered, this, &MainWindow::hintSlot);
+    hintAct->setShortcut(Qt::CTRL | Qt::Key_H);
+    hintAct->setEnabled(false);
+    hintButton->setEnabled(false);
+
+    resetAct = new QAction("Reset");
+    resetButton = new QPushButton("Reset");
+    connect(resetButton, &QPushButton::clicked, resetAct, &QAction::trigger);
+    connect(resetAct, &QAction::triggered, this, &MainWindow::resetSlot);
+    resetAct->setShortcut(Qt::CTRL | Qt::Key_R);
+    resetAct->setEnabled(false);
+    resetButton->setEnabled(false);
+
+    // Menu Bar Setup
     QMenu *fileMenu = new QMenu("&File");
-    fileMenu->addAction(openImageAct);
+    fileMenu->addAction(uploadAct);
+    fileMenu->addAction(addImageAct);
+    fileMenu->addAction(processAct);
     fileMenu->addAction(solvePuzzleAct);
+    fileMenu->addAction(hintAct);
+    fileMenu->addAction(resetAct);
     menuBar()->addMenu(fileMenu);
 
-    //save the last directory
+    // Save the last directory
     QSettings settings("Group", "puzzle solver");
     lastDir = settings.value("lastDir", "").toString();
 
+    mainLayout = new QHBoxLayout();
 
+    QWidget *buttonPanel = new QWidget();
+    buttonPanel->setFixedWidth(100);
+    QVBoxLayout *buttonLayout = new QVBoxLayout(buttonPanel);
+
+    buttonLayout->addWidget(uploadButton);
+    buttonLayout->addWidget(addImageButton);
+    buttonLayout->addWidget(processButton);
+    buttonLayout->addWidget(solveButton);
+    buttonLayout->addWidget(hintButton);
+    buttonLayout->addWidget(resetButton);
+    buttonLayout->addStretch();
+
+    mainLayout->addWidget(buttonPanel);
+
+    QFrame *separator = new QFrame();
+    separator->setFrameShape(QFrame::VLine);
+    separator->setFrameShadow(QFrame::Sunken);
+    mainLayout->addWidget(separator);
+
+
+    scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    placeholder = new QWidget();
+    // placeholder->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    scrollArea->setWidget(placeholder);
+    mainLayout->addWidget(scrollArea);
+
+
+    center->setLayout(mainLayout);
 }
 
 MainWindow::~MainWindow() {
@@ -60,17 +137,161 @@ Waiter::~Waiter(){
 Handles and processes a given file into puzzle pieces when user opens any image
 */
 void MainWindow::openImageSlot() {
-    //open file as QImage and put on screen
-    QString fName = QFileDialog::getOpenFileName(this, "select image file", lastDir, "image files (*.png *.jpg *.bmp *.jpeg)");
+    QString fName = QFileDialog::getOpenFileName(this, "Select Image File", lastDir, "Image Files (*.png *.jpg *.bmp *.jpeg)");
     if (fName.isEmpty()) return;
     QImage image(fName);
     if (image.isNull()) return;
 
-    lastDir = QFileInfo(fName).absolutePath(); //update last directory
+    lastDir = QFileInfo(fName).absolutePath(); // Update last directory
 
-    //save the center of the original image
-    orgImageCenter = QPoint(image.height()/2, image.width()/2);
+    QLabel *imageLabel = new QLabel();
+    imageLabel->setPixmap(QPixmap::fromImage(image));
+    imageLabel->setScaledContents(true);
 
-    puzzleLayout = new PuzzleSolverLayout(image);
-    setCentralWidget(puzzleLayout);
+    if (placeholder->layout()) {
+        QLayout *layout = placeholder->layout();
+        while (QLayoutItem *item = layout->takeAt(0)) {
+            delete item->widget();
+            delete item;
+        }
+        delete layout;
+    }
+
+    QVBoxLayout *imageLayout = new QVBoxLayout(placeholder);
+    imageLayout->addWidget(imageLabel);
+
+    addImageAct->setEnabled(true);
+    addImageButton->setEnabled(true);
+
+    processAct->setEnabled(true);
+    processButton->setEnabled(true);
+
+    resetAct->setEnabled(true);
+    resetButton->setEnabled(true);
 }
+
+void MainWindow::addImageSlot() {
+    QString fName = QFileDialog::getOpenFileName(this, "Select Additional Image", lastDir, "Image Files (*.png *.jpg *.bmp *.jpeg)");
+    if (fName.isEmpty()) return;
+    QImage image(fName);
+    if (image.isNull()) return;
+
+    lastDir = QFileInfo(fName).absolutePath();
+
+    QLabel *imageLabel = new QLabel();
+    imageLabel->setPixmap(QPixmap::fromImage(image));
+    imageLabel->setScaledContents(true);
+
+    if (placeholder && placeholder->layout()) {
+        static_cast<QVBoxLayout *>(placeholder->layout())->addWidget(imageLabel);
+    } else {
+        qDebug() << "No existing layout for additional images.";
+    }
+}
+
+void MainWindow::processSlot() {
+    if (placeholder && placeholder->layout()) {
+        QVBoxLayout *imageLayout = static_cast<QVBoxLayout *>(placeholder->layout());
+        QList<QImage> images;
+
+        for (int i = 0; i < imageLayout->count(); ++i) {
+            QLabel *label = qobject_cast<QLabel *>(imageLayout->itemAt(i)->widget());
+            if (label) {
+                images.append(label->pixmap().toImage());
+            }
+        }
+
+        if (images.isEmpty()) return;
+
+        int totalHeight = 0;
+        int maxWidth = 0;
+        for (const QImage &img : images) {
+            totalHeight += img.height();
+            maxWidth = std::max(maxWidth, img.width());
+        }
+
+        QImage stitchedImage(maxWidth, totalHeight, QImage::Format_ARGB32);
+        stitchedImage.fill(0x00000000);
+
+        int yOffset = 0;
+        for (const QImage &img : images) {
+            for (int y = 0; y < img.height(); ++y) {
+                for (int x = 0; x < img.width(); ++x) {
+                    stitchedImage.setPixel(x, yOffset + y, img.pixel(x, y));
+                }
+            }
+            yOffset += img.height();
+        }
+
+        if (puzzleLayout) delete puzzleLayout;
+        puzzleLayout = new PuzzleSolverLayout(stitchedImage);
+        mainLayout->addWidget(puzzleLayout);
+
+        solvePuzzleAct->setEnabled(true);
+        solveButton->setEnabled(true);
+    }
+}
+
+
+
+/*
+Runs solving algorith on puzzle
+*/
+void MainWindow::solveSlot() {
+    qDebug() << "will solve soon...";
+
+
+    hintAct->setEnabled(true);
+    hintButton->setEnabled(true);
+}
+
+/*
+gives the user a hint on solving the puzzle
+*/
+void MainWindow::hintSlot() {
+    qDebug() << "will give hint soon...";
+}
+
+/*
+resets the program
+*/
+void MainWindow::resetSlot() {
+    processedImage = QImage();
+    orgImageCenter = QPoint();
+
+    processAct->setEnabled(false);
+    processButton->setEnabled(false);
+
+    addImageAct->setEnabled(false);
+    addImageButton->setEnabled(false);
+
+    solvePuzzleAct->setEnabled(false);
+    solveButton->setEnabled(false);
+
+    hintAct->setEnabled(false);
+    hintButton->setEnabled(false);
+
+    resetAct->setEnabled(false);
+    resetButton->setEnabled(false);
+
+    if (puzzleLayout) {
+        delete puzzleLayout;
+        puzzleLayout = nullptr;
+    }
+
+    if (placeholder && placeholder->layout()) {
+        QLayout *layout = placeholder->layout();
+        while (QLayoutItem *item = layout->takeAt(0)) {
+            delete item->widget();
+            delete item;
+        }
+        delete layout;
+    }
+
+    QVBoxLayout *imageLayout = new QVBoxLayout(placeholder);
+    placeholder->setLayout(imageLayout);
+
+    update();
+}
+
+

@@ -13,6 +13,7 @@ interactivePiece::interactivePiece(const QList<QImage> &pieces, QWidget *parent)
     : QGraphicsView(parent), scene(new QGraphicsScene(this)), currentZ(1) {
 
     setScene(scene);
+    setBackgroundBrush(Qt::white);
 
     grabKeyboard();
     scale = 1;

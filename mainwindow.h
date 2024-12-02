@@ -13,6 +13,26 @@ class MainWindow : public QMainWindow
     QImage processedImage;
     QPoint orgImageCenter;
     interactivePiece* interactivePieceLayout;
+    QHBoxLayout* layout;
+    QHBoxLayout *mainLayout;
+    QScrollArea *scrollArea;
+    QWidget *placeholder;
+
+    QAction *addImageAct;
+    QPushButton *addImageButton;
+
+    QAction *processAct;
+    QPushButton *processButton;
+
+    QAction *solvePuzzleAct;
+    QPushButton *solveButton;
+
+    QAction *hintAct;
+    QPushButton *hintButton;
+
+    QAction *resetAct;
+    QPushButton *resetButton;
+
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -20,6 +40,11 @@ public:
 
 public slots:
     void openImageSlot();
+    void addImageSlot();
+    void processSlot();
+    void solveSlot();
+    void hintSlot();
+    void resetSlot();
 
 };
 
