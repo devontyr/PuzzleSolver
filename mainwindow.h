@@ -18,6 +18,7 @@ class MainWindow : public QMainWindow
     QHBoxLayout *mainLayout;
     QScrollArea *scrollArea;
     QWidget *placeholder;
+    ImageViewer *imageViewer;
 
     QAction *addImageAct;
     QPushButton *addImageButton;

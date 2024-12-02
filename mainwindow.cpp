@@ -3,7 +3,7 @@
 #include <QtWidgets>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent) {
+    : QMainWindow(parent), imageViewer(nullptr) {
 
     setWindowTitle("Puzzle Solver");
 
@@ -108,6 +108,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow() {
     QSettings settings("Group", "puzzle solver");
     lastDir = settings.value("lastDir", lastDir).toString();
+
+    delete imageViewer;
 }
 
 
@@ -117,26 +119,19 @@ Handles and processes a given file into puzzle pieces when user opens any image
 void MainWindow::openImageSlot() {
     QString fName = QFileDialog::getOpenFileName(this, "Select Image File", lastDir, "Image Files (*.png *.jpg *.bmp *.jpeg)");
     if (fName.isEmpty()) return;
+
     QImage image(fName);
     if (image.isNull()) return;
 
-    lastDir = QFileInfo(fName).absolutePath(); // Update last directory
+    lastDir = QFileInfo(fName).absolutePath();
 
-    QLabel *imageViewer = new QLabel();
-    imageViewer->setPixmap(QPixmap::fromImage(image));
-    imageViewer->setScaledContents(true);
+    if (imageViewer) delete imageViewer;
+    imageViewer = new ImageViewer(this);
 
-    if (placeholder->layout()) {
-        QLayout *layout = placeholder->layout();
-        while (QLayoutItem *item = layout->takeAt(0)) {
-            delete item->widget();
-            delete item;
-        }
-        delete layout;
-    }
+    placeholder->setLayout(new QVBoxLayout());
+    placeholder->layout()->addWidget(imageViewer);
 
-    QVBoxLayout *imageLayout = new QVBoxLayout(placeholder);
-    imageLayout->addWidget(imageViewer);
+    imageViewer->addImage(image);
 
     addImageAct->setEnabled(true);
     addImageButton->setEnabled(true);
@@ -151,75 +146,85 @@ void MainWindow::openImageSlot() {
 void MainWindow::addImageSlot() {
     QString fName = QFileDialog::getOpenFileName(this, "Select Additional Image", lastDir, "Image Files (*.png *.jpg *.bmp *.jpeg)");
     if (fName.isEmpty()) return;
+
     QImage image(fName);
     if (image.isNull()) return;
 
     lastDir = QFileInfo(fName).absolutePath();
 
-    QLabel *imageView = new QLabel();
-    imageView->setPixmap(QPixmap::fromImage(image));
-    imageView->setScaledContents(true);
-
-    if (placeholder && placeholder->layout()) {
-        static_cast<QVBoxLayout *>(placeholder->layout())->addWidget(imageView);
+    if (imageViewer) {
+        imageViewer->addImage(image);
     } else {
-        qDebug() << "No existing layout for additional images.";
+        qDebug() << "No image viewer available to add the image.";
     }
 }
 
 void MainWindow::processSlot() {
-    if (placeholder && placeholder->layout()) {
-        QVBoxLayout *imageLayout = static_cast<QVBoxLayout *>(placeholder->layout());
-        QList<QImage> images;
-
-        for (int i = 0; i < imageLayout->count(); ++i) {
-            QLabel *label = qobject_cast<QLabel *>(imageLayout->itemAt(i)->widget());
-            if (label) {
-                images.append(label->pixmap().toImage());
-            }
-        }
-
-        if (images.isEmpty()) return;
-
-        int totalHeight = 0;
-        int maxWidth = 0;
-        for (const QImage &img : images) {
-            totalHeight += img.height();
-            maxWidth = std::max(maxWidth, img.width());
-        }
-
-        QImage stitchedImage(maxWidth, totalHeight, QImage::Format_ARGB32);
-        stitchedImage.fill(0x00000000);
-
-        int yOffset = 0;
-        for (const QImage &img : images) {
-            for (int y = 0; y < img.height(); ++y) {
-                for (int x = 0; x < img.width(); ++x) {
-                    stitchedImage.setPixel(x, yOffset + y, img.pixel(x, y));
-                }
-            }
-            yOffset += img.height();
-        }
-
-        if (placeholder && placeholder->layout()) {
-            QLayout *layout = placeholder->layout();
-            while (QLayoutItem *item = layout->takeAt(0)) {
-                delete item->widget();
-                delete item;
-            }
-            delete layout;
-        }
-
-        scrollArea->setVisible(false);
-        if (puzzleLayout) delete puzzleLayout;
-        puzzleLayout = new PuzzleSolverLayout(stitchedImage);
-        mainLayout->addWidget(puzzleLayout);
-
-        solvePuzzleAct->setEnabled(true);
-        solveButton->setEnabled(true);
+    if (!imageViewer) {
+        qDebug() << "No images to process.";
+        return;
     }
-}
 
+    // Get all pixmap items from the ImageViewer's scene
+    QList<QGraphicsItem *> items = imageViewer->items();
+    QList<QImage> images;
+
+    for (QGraphicsItem *item : items) {
+        QGraphicsPixmapItem *pixmapItem = qgraphicsitem_cast<QGraphicsPixmapItem *>(item);
+        if (pixmapItem) {
+            QPixmap pixmap = pixmapItem->pixmap();
+            if (!pixmap.isNull()) {
+                images.append(pixmap.toImage());
+            }
+        }
+    }
+
+    if (images.isEmpty()) {
+        qDebug() << "No valid images to process.";
+        return;
+    }
+
+    int totalHeight = 0;
+    int maxWidth = 0;
+    for (const QImage &img : images) {
+        totalHeight += img.height();
+        maxWidth = std::max(maxWidth, img.width());
+    }
+
+    QImage stitchedImage(maxWidth, totalHeight, QImage::Format_ARGB32);
+    stitchedImage.fill(Qt::transparent);
+
+    int yOffset = 0;
+    for (const QImage &img : images) {
+        for (int y = 0; y < img.height(); ++y) {
+            for (int x = 0; x < img.width(); ++x) {
+                stitchedImage.setPixel(x, yOffset + y, img.pixel(x, y));
+            }
+        }
+        yOffset += img.height();
+    }
+
+    if (placeholder && placeholder->layout()) {
+        QLayout *layout = placeholder->layout();
+        while (QLayoutItem *item = layout->takeAt(0)) {
+            delete item->widget();
+            delete item;
+        }
+        delete layout;
+    }
+
+    scrollArea->setVisible(false);
+    if (puzzleLayout) delete puzzleLayout;
+
+    puzzleLayout = new PuzzleSolverLayout(stitchedImage);
+    mainLayout->addWidget(puzzleLayout);
+
+    addImageAct->setEnabled(false);
+    addImageButton->setEnabled(false);
+
+    solvePuzzleAct->setEnabled(true);
+    solveButton->setEnabled(true);
+}
 
 
 /*
