@@ -2,8 +2,6 @@
 #include <imageviewer.h>
 #include <QtWidgets>
 
-MainWindow *mainWindow;
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent) {
 
@@ -112,26 +110,6 @@ MainWindow::~MainWindow() {
     lastDir = settings.value("lastDir", lastDir).toString();
 }
 
-int Waiter::count = 0;
-
-Waiter::Waiter() {
-    if (++count == 1) {
-        mainWindow->setEnabled(false);
-        mainWindow->statusBar()->showMessage("patience is a virtue...");
-        mainWindow->statusBar()->show();
-        QApplication::processEvents();
-    }
-}
-
-Waiter::~Waiter(){
-    if (--count == 0) {
-        mainWindow->setEnabled(true);
-        mainWindow->statusBar()->clearMessage();
-        mainWindow->statusBar()->hide();
-        QApplication::processEvents();
-    }
-}
-
 
 /*
 Handles and processes a given file into puzzle pieces when user opens any image
@@ -144,9 +122,9 @@ void MainWindow::openImageSlot() {
 
     lastDir = QFileInfo(fName).absolutePath(); // Update last directory
 
-    QLabel *imageLabel = new QLabel();
-    imageLabel->setPixmap(QPixmap::fromImage(image));
-    imageLabel->setScaledContents(true);
+    QLabel *imageViewer = new QLabel();
+    imageViewer->setPixmap(QPixmap::fromImage(image));
+    imageViewer->setScaledContents(true);
 
     if (placeholder->layout()) {
         QLayout *layout = placeholder->layout();
@@ -158,7 +136,7 @@ void MainWindow::openImageSlot() {
     }
 
     QVBoxLayout *imageLayout = new QVBoxLayout(placeholder);
-    imageLayout->addWidget(imageLabel);
+    imageLayout->addWidget(imageViewer);
 
     addImageAct->setEnabled(true);
     addImageButton->setEnabled(true);
@@ -178,12 +156,12 @@ void MainWindow::addImageSlot() {
 
     lastDir = QFileInfo(fName).absolutePath();
 
-    QLabel *imageLabel = new QLabel();
-    imageLabel->setPixmap(QPixmap::fromImage(image));
-    imageLabel->setScaledContents(true);
+    QLabel *imageView = new QLabel();
+    imageView->setPixmap(QPixmap::fromImage(image));
+    imageView->setScaledContents(true);
 
     if (placeholder && placeholder->layout()) {
-        static_cast<QVBoxLayout *>(placeholder->layout())->addWidget(imageLabel);
+        static_cast<QVBoxLayout *>(placeholder->layout())->addWidget(imageView);
     } else {
         qDebug() << "No existing layout for additional images.";
     }
@@ -232,6 +210,7 @@ void MainWindow::processSlot() {
             delete layout;
         }
 
+        scrollArea->setVisible(false);
         if (puzzleLayout) delete puzzleLayout;
         puzzleLayout = new PuzzleSolverLayout(stitchedImage);
         mainLayout->addWidget(puzzleLayout);
@@ -267,6 +246,7 @@ resets the program
 void MainWindow::resetSlot() {
     processedImage = QImage();
     orgImageCenter = QPoint();
+    scrollArea->setVisible(true);
 
     processAct->setEnabled(false);
     processButton->setEnabled(false);

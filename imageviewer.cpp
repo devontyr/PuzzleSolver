@@ -10,7 +10,7 @@ ImageViewer::ImageViewer(const QImage &_image):image(_image), scale(1.0) {
     setBackgroundBrush(Qt::lightGray);
     setSceneRect(QRectF(QPointF(0, 0), image.size()));
     setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    // grabKeyboard();
+    grabKeyboard();
 }
 
 void ImageViewer::keyPressEvent(QKeyEvent *evt) {
@@ -20,4 +20,8 @@ void ImageViewer::keyPressEvent(QKeyEvent *evt) {
         setSceneRect(QRectF(QPointF(0,0), image.size()*scale));
     } else
         QGraphicsView::keyPressEvent(evt);
+}
+
+QImage ImageViewer::getImage() {
+    return image;
 }

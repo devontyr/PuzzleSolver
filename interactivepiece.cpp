@@ -16,7 +16,7 @@ interactivePiece::interactivePiece(const QList<QImage> &pieces, QWidget *parent)
     setBackgroundBrush(Qt::white);
 
     grabKeyboard();
-    scale = 1;
+    scaleF = 1.0;
 
     snapDistance = 200;
     pieceScan = 260;
@@ -29,8 +29,10 @@ interactivePiece::interactivePiece(const QList<QImage> &pieces, QWidget *parent)
         scene -> addItem(item);
         item->setTransformOriginPoint(item->boundingRect().center());
         item->setPos(pos1, 0);
-        pos1 += 300;
-        item -> setScale(scale);
+        pos1 += 600;
+        item -> setScale(scaleF);
+
+        originalPositions[item] = item->pos();
 
     }
     setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
@@ -58,24 +60,28 @@ Kep Pressed function. Rotates a single piece or rescales all pieces.
     output: rotated or rescaled piece
 */
 void interactivePiece::keyPressEvent(QKeyEvent *evt) {
-    if (lastSelectedItem) {
+    if (evt->key() == Qt::Key_Equal || evt->key() == Qt::Key_Minus) {
+        double scaleFactor = (evt->key() == Qt::Key_Equal) ? 2.0 : 0.5;
+        scaleF *= scaleFactor;
+
+        this->scale(scaleFactor, scaleFactor);
+
+        QTransform transform = this->viewportTransform();
+
+        for (QGraphicsItem *item : scene->items()) {
+            QPointF itemScenePos = item->pos();
+            QPointF itemViewPos = transform.map(itemScenePos);
+            QPointF newScenePos = transform.inverted().map(itemViewPos);
+            item->setPos(newScenePos);
+        }
+    } else if (lastSelectedItem) {
         if (evt->key() == Qt::Key_D) {
             lastSelectedItem->setRotation(lastSelectedItem->rotation() + 90);
         } else if (evt->key() == Qt::Key_A) {
             lastSelectedItem->setRotation(lastSelectedItem->rotation() - 90);
         }
     }
-    if (evt->key() == Qt::Key_Equal || evt->key() == Qt::Key_Minus) {
-        scale *= (evt->key() == Qt::Key_Equal) ? 2.0 : 0.5;
-        snapDistance *= scale; pieceScan *= scale;
-        for (QGraphicsItem *item : scene -> items()) {
-            QPointF loc = item->pos();
-            loc.setX(loc.x() * scale);
-            loc.setY(loc.y() * scale);
-            item->setScale(scale);
-            item->setPos(loc);
-        }
-    }
+
     QGraphicsView::keyPressEvent(evt);
 }
 

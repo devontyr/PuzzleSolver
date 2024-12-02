@@ -15,6 +15,7 @@ class ImageViewer : public QGraphicsView
 public:
 
     ImageViewer(const QImage &_image);
+    QImage getImage();
 
 signals:
 

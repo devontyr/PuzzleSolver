@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "puzzlesolverlayout.h"
 #include "interactivepiece.h"
+#include "imageviewer.h"
 
 class MainWindow : public QMainWindow
 {
@@ -48,12 +49,4 @@ public slots:
 
 };
 
-extern MainWindow *mainWindow;
-
-class Waiter {
-    static int count;
-public:
-    Waiter();
-    ~Waiter();
-};
 #endif // MAINWINDOW_H
