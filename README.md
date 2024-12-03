@@ -10,3 +10,6 @@ Once the first image is opened, the **Add Image** button becomes enabled. Use th
 At any point after the first image is opened, you can click the **Process** button. This is the key step where our algorithm analyzes all the loaded images.  
 
 Upon processing, a new **QGraphicsView** will open, displaying each puzzle piece as an independent, movable, and rotatable element. This interactive view allows you to freely manipulate the pieces to solve the puzzle.  
+
+### Resetting the Application  
+At any point, the **Reset** button can be clicked to return the application to its initial state, as if it had just been opened. This clears all loaded images and resets the interface. 
