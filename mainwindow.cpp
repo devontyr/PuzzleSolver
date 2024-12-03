@@ -252,6 +252,7 @@ void MainWindow::resetSlot() {
     orgImageCenter = QPoint();
     scrollArea->setVisible(true);
 
+    // Disable all buttons and actions
     processAct->setEnabled(false);
     processButton->setEnabled(false);
 
@@ -268,21 +269,25 @@ void MainWindow::resetSlot() {
     resetButton->setEnabled(false);
 
     if (puzzleLayout) {
+        mainLayout->removeWidget(puzzleLayout);
         delete puzzleLayout;
         puzzleLayout = nullptr;
     }
 
-    if (placeholder && placeholder->layout()) {
-        QLayout *layout = placeholder->layout();
-        while (QLayoutItem *item = layout->takeAt(0)) {
-            delete item->widget();
-            delete item;
-        }
-        delete layout;
+    if (imageViewer) {
+        delete imageViewer;
+        imageViewer = nullptr;
     }
 
-    QVBoxLayout *imageLayout = new QVBoxLayout(placeholder);
-    placeholder->setLayout(imageLayout);
+    if (placeholder) {
+        if (placeholder->layout()) {
+            QLayout *oldLayout = placeholder->layout();
+            delete oldLayout;
+        }
+
+        QVBoxLayout *imageLayout = new QVBoxLayout(placeholder);
+        placeholder->setLayout(imageLayout);
+    }
 
     update();
 }
