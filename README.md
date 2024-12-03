@@ -1,0 +1,4 @@
+User Guide:
+When the user opens the application for the first time, they are met with only one option which is to **Open Image** of their choosing. 
+The user will then ideally choose a scan of puzzle pieces.  The user has the option to open as many additional images as they want, using the now enabled **Add Image** button. These additional images would ideally be scans of puzzle pieces that all belong to the same puzzle as the original opened image.
+At any point after the first image is opened, the user is free to use the **Process** button. This button is to be used after all puzzle piece scans have been added. When clicked, our algorithm is run on all of the images, which opens a new QGraphicsView with each puzzle piece as a separate element, free to move around and rotate independently of all the other pieces.
