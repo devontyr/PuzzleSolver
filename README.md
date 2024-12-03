@@ -11,8 +11,11 @@ At any point after the first image is opened, you can click the **Process** butt
 
 Upon processing, a new **QGraphicsView** will open, displaying each puzzle piece as an independent, movable, and rotatable element. This interactive view allows you to freely manipulate the pieces to solve the puzzle.  
 
-### Solving the Puzzel
-Once processed, the solve button can be used to run the solving algorithm on the collection of pieces, finding the most likely combinatino of pieces that 
+### Solve the Puzzle  
+Once processed, you can click the **Solve** button. This triggers the solving algorithm on the collection of pieces, which automatically arranges the pieces into their correct positions.  
+
+### Show Hint  
+If you need assistance, click the **Show Hint** button. This will display a suggestion for the next piece to place, guiding you in solving the puzzle.
 
 ### Resetting the Application  
 At any point, the **Reset** button can be clicked to return the application to its initial state, as if it had just been opened. This clears all loaded images and resets the interface. 
