@@ -17,12 +17,12 @@ At any point, the **Reset** button can be clicked to return the application to i
 ## Developer Notes
 
 ### Code Design
-MainWindow handles all GUI button processing.
-ImageViewer allows user to view unprocessed images.
-PuzzlePiece is an object to store all information about a given puzzle piece.
-PuzzleSolverLayout does all image processing tasks, outputting a binary matrix for each puzzle piece.
-InteractivePiece allows user to move puzzle pieces around the screen.
-PuzzleSolver does all algorithmic solving of the puzzle.
+1. MainWindow handles all GUI button processing.
+2. ImageViewer allows user to view unprocessed images.
+3. PuzzlePiece is an object to store all information about a given puzzle piece.
+4. PuzzleSolverLayout does all image processing tasks, outputting a binary matrix for each puzzle piece.
+5. InteractivePiece allows user to move puzzle pieces around the screen.
+6. PuzzleSolver does all algorithmic solving of the puzzle.
 
 ### Known Issues
 Currently missing edge identification needed to pass to the solving algorithm in order to solve the puzzle
