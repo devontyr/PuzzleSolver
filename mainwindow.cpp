@@ -109,7 +109,6 @@ MainWindow::~MainWindow() {
     QSettings settings("Group", "puzzle solver");
     lastDir = settings.value("lastDir", lastDir).toString();
 
-    delete imageViewer;
 }
 
 
