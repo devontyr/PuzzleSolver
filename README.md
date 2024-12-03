@@ -1,4 +1,4 @@
-## User Guide  
+## User Guide
 
 ### Getting Started  
 When you open the application for the first time, you will see a single option: **Open Image**. This allows you to select the initial image to begin working with. Ideally, this should be a scan of puzzle pieces.  
@@ -13,3 +13,16 @@ Upon processing, a new **QGraphicsView** will open, displaying each puzzle piece
 
 ### Resetting the Application  
 At any point, the **Reset** button can be clicked to return the application to its initial state, as if it had just been opened. This clears all loaded images and resets the interface. 
+
+## Developer Notes
+
+### Code Design
+MainWindow handles all GUI button processing.
+ImageViewer allows user to view unprocessed images.
+PuzzlePiece is an object to store all information about a given puzzle piece.
+PuzzleSolverLayout does all image processing tasks, outputting a binary matrix for each puzzle piece.
+InteractivePiece allows user to move puzzle pieces around the screen.
+PuzzleSolver does all algorithmic solving of the puzzle.
+
+### Known Issues
+Currently missing edge identification needed to pass to the solving algorithm in order to solve the puzzle
