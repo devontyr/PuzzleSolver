@@ -148,16 +148,10 @@ BFS on the redImage to cut out each individual puzzle piece.
     output:
             pieces -- a list of QImage puzzle pieces
 */
-<<<<<<< HEAD
-void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
-    QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
-    queue<QPoint> toDo;
-=======
 void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
     //QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QList<QPoint> toDo;
     toDo.reserve(100000);
->>>>>>> d17de2a62c72fcf5cf9ffff64cb3252d0c8fde25
     int minPieceSize = 30000;
     int C = image.width(), R = image.height();
     QRgb white = 0xffffffff;
@@ -178,21 +172,12 @@ void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
             piece.fill(0x00ffffff);
             int curPiecePixels = 0;
             int minX = C; int minY = R; int maxX = 0; int maxY = 0;
-<<<<<<< HEAD
-            toDo.push(curPoint);
-
-            while (!toDo.empty()) {
-
-                QPoint topPoint = toDo.front();
-                toDo.pop(); // pop top pixel off the stack
-=======
             toDo << curPoint;
 
             while (!toDo.empty()) {
 
                 QPoint topPoint = toDo.back();
                 toDo.pop_back(); // pop top pixel off the stack
->>>>>>> d17de2a62c72fcf5cf9ffff64cb3252d0c8fde25
 
                 QRgb orgColor = image.pixel(topPoint);
 
@@ -207,16 +192,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
                 ++curPiecePixels; // add to the number of pixels
 
                 // add any valid colored neighbors to toDo
-<<<<<<< HEAD
-                QPoint lNeighbor = QPoint(topPoint.x() - 1, topPoint.y());
-                QPoint rNeighbor = QPoint(topPoint.x() + 1, topPoint.y());
-                QPoint tNeighbor = QPoint(topPoint.x(), topPoint.y() + 1);
-                QPoint bNeighbor = QPoint(topPoint.x(), topPoint.y() - 1);
-                if (redImage.valid(lNeighbor) && redImage.pixel(lNeighbor) == red) toDo.push(lNeighbor);
-                if (redImage.valid(rNeighbor) && redImage.pixel(rNeighbor) == red) toDo.push(rNeighbor);
-                if (redImage.valid(tNeighbor) && redImage.pixel(tNeighbor) == red) toDo.push(tNeighbor);
-                if (redImage.valid(bNeighbor) && redImage.pixel(bNeighbor) == red) toDo.push(bNeighbor);
-=======
+
                 QPoint lNeighbor(topPoint.x() - 1, topPoint.y());
                 QPoint rNeighbor(topPoint.x() + 1, topPoint.y());
                 QPoint tNeighbor(topPoint.x(), topPoint.y() + 1);
@@ -225,7 +201,6 @@ void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
                 if (redImage.valid(rNeighbor) && redImage.pixel(rNeighbor) == red) toDo << rNeighbor;
                 if (redImage.valid(tNeighbor) && redImage.pixel(tNeighbor) == red) toDo << tNeighbor;
                 if (redImage.valid(bNeighbor) && redImage.pixel(bNeighbor) == red) toDo << bNeighbor;
->>>>>>> d17de2a62c72fcf5cf9ffff64cb3252d0c8fde25
             }
             // once toDo empty, we have found a full piece
             // check that it has enough pixels and then add that pieces to the collection of pieces
