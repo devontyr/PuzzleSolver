@@ -21,12 +21,12 @@ PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
     setLayout(mainLayout);
 
     // add the ImageViewer to the top
-    ImageViewer *imageViewer = new ImageViewer(imageToProcess);
-    mainLayout->addWidget(imageViewer);
+    // ImageViewer *imageViewer = new ImageViewer(imageToProcess);
+    //mainLayout->addWidget(imageViewer);
 
     // add QGraphicsView to the bottom
     solverInterface = new QGraphicsView;
-    mainLayout->addWidget(imageViewer);
+    // mainLayout->addWidget(imageViewer);
 
     scene = new QGraphicsScene(this);
     solverInterface->setScene(scene);

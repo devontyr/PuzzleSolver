@@ -20,9 +20,10 @@ private:
     QGraphicsScene *scene;
     int currentZ;
     QGraphicsItem *lastSelectedItem;
-    double scale;
+    double scaleF;
     double snapDistance;
     double pieceScan;
+    QMap<QGraphicsItem*, QPointF> originalPositions;
 };
 
 

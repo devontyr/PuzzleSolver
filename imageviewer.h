@@ -2,26 +2,23 @@
 #define IMAGEVIEWER_H
 
 #include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
 
 class ImageViewer : public QGraphicsView
 {
     Q_OBJECT
 
     QGraphicsScene scene;
-    QImage image;
-    QGraphicsPixmapItem *giPixmap;
-    double scale;
+    double scaleFactor;
 
 public:
-
-    ImageViewer(const QImage &_image);
-
-signals:
-
-    void mouseMoved(QPoint pos, QColor color);
+    explicit ImageViewer(QWidget *parent = nullptr);
+    void addImage(const QImage &image);
+    void scaleImages(double factor);
+    QGraphicsScene *getScene();
 
 protected:
-
     void keyPressEvent(QKeyEvent *evt) override;
 };
 
