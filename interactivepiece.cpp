@@ -3,6 +3,12 @@
 
 using namespace std;
 
+
+/*
+Main method show all the processed puzzle pieces in a user friendly, interactive format
+    input: a list of pieces as QImages
+    output: displays each individual piece with the ability to drag, resize, rotate them
+*/
 interactivePiece::interactivePiece(const QList<QImage> &pieces, QWidget *parent)
     : QGraphicsView(parent), scene(new QGraphicsScene(this)), currentZ(1) {
 
@@ -30,6 +36,11 @@ interactivePiece::interactivePiece(const QList<QImage> &pieces, QWidget *parent)
 
 }
 
+/*
+Mouse Pressed function. Moves selected piece to front of focus
+    input: mouse event
+    output: selected piece given new Z value
+*/
 void interactivePiece::mousePressEvent(QMouseEvent *evt) {
     QGraphicsItem *item = itemAt(evt->pos());
     if (item) {
@@ -40,6 +51,11 @@ void interactivePiece::mousePressEvent(QMouseEvent *evt) {
     QGraphicsView::mousePressEvent(evt);
 }
 
+/*
+Kep Pressed function. Rotates a single piece or rescales all pieces.
+    input: key event
+    output: rotated or rescaled piece
+*/
 void interactivePiece::keyPressEvent(QKeyEvent *evt) {
     if (lastSelectedItem) {
         if (evt->key() == Qt::Key_D) {
@@ -62,7 +78,11 @@ void interactivePiece::keyPressEvent(QKeyEvent *evt) {
     QGraphicsView::keyPressEvent(evt);
 }
 
-
+/*
+Mouse Released function. Moves selected piece to new location, snaps onto another piece if it is close enough
+    input: mouse event
+    output: selected piece moved to new location
+*/
 void interactivePiece::mouseReleaseEvent(QMouseEvent *evt) {
     QGraphicsItem *item = itemAt(evt->pos());
     if (!item) {

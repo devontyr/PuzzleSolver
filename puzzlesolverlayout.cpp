@@ -146,13 +146,18 @@ bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
 BFS on the redImage to cut out each individual puzzle piece.
     input: image, redImage
     output:
-            PuzzlePixels -- list of QPoint pixels for each piece
-            PuzzlePieces -- a master list of lists of QPoints (made up of many PuzzlePixels)
             pieces -- a list of QImage puzzle pieces
 */
+<<<<<<< HEAD
 void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
     QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     queue<QPoint> toDo;
+=======
+void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
+    //QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
+    QList<QPoint> toDo;
+    toDo.reserve(100000);
+>>>>>>> d17de2a62c72fcf5cf9ffff64cb3252d0c8fde25
     int minPieceSize = 30000;
     int C = image.width(), R = image.height();
     QRgb white = 0xffffffff;
@@ -173,12 +178,21 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
             piece.fill(0x00ffffff);
             int curPiecePixels = 0;
             int minX = C; int minY = R; int maxX = 0; int maxY = 0;
+<<<<<<< HEAD
             toDo.push(curPoint);
 
             while (!toDo.empty()) {
 
                 QPoint topPoint = toDo.front();
                 toDo.pop(); // pop top pixel off the stack
+=======
+            toDo << curPoint;
+
+            while (!toDo.empty()) {
+
+                QPoint topPoint = toDo.back();
+                toDo.pop_back(); // pop top pixel off the stack
+>>>>>>> d17de2a62c72fcf5cf9ffff64cb3252d0c8fde25
 
                 QRgb orgColor = image.pixel(topPoint);
 
@@ -186,13 +200,14 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
 
                 // add it to the current puzzle piece
                 piece.setPixel(topPoint, orgColor);
-                PuzzlePixels.insert(topPoint);
-                minX = fmin(minX, topPoint.x()); minY = fmin(minY, topPoint.y());
-                maxX = fmax(maxX, topPoint.x()); maxY = fmax(maxY, topPoint.y());
+                //PuzzlePixels.insert(topPoint);
+                minX = min(minX, topPoint.x()); minY = min(minY, topPoint.y());
+                maxX = max(maxX, topPoint.x()); maxY = max(maxY, topPoint.y());
 
                 ++curPiecePixels; // add to the number of pixels
 
                 // add any valid colored neighbors to toDo
+<<<<<<< HEAD
                 QPoint lNeighbor = QPoint(topPoint.x() - 1, topPoint.y());
                 QPoint rNeighbor = QPoint(topPoint.x() + 1, topPoint.y());
                 QPoint tNeighbor = QPoint(topPoint.x(), topPoint.y() + 1);
@@ -201,17 +216,59 @@ void PuzzleSolverLayout::pieceSeperator(QImage& image, QImage &redImage) {
                 if (redImage.valid(rNeighbor) && redImage.pixel(rNeighbor) == red) toDo.push(rNeighbor);
                 if (redImage.valid(tNeighbor) && redImage.pixel(tNeighbor) == red) toDo.push(tNeighbor);
                 if (redImage.valid(bNeighbor) && redImage.pixel(bNeighbor) == red) toDo.push(bNeighbor);
+=======
+                QPoint lNeighbor(topPoint.x() - 1, topPoint.y());
+                QPoint rNeighbor(topPoint.x() + 1, topPoint.y());
+                QPoint tNeighbor(topPoint.x(), topPoint.y() + 1);
+                QPoint bNeighbor(topPoint.x(), topPoint.y() - 1);
+                if (redImage.valid(lNeighbor) && redImage.pixel(lNeighbor) == red) toDo << lNeighbor;
+                if (redImage.valid(rNeighbor) && redImage.pixel(rNeighbor) == red) toDo << rNeighbor;
+                if (redImage.valid(tNeighbor) && redImage.pixel(tNeighbor) == red) toDo << tNeighbor;
+                if (redImage.valid(bNeighbor) && redImage.pixel(bNeighbor) == red) toDo << bNeighbor;
+>>>>>>> d17de2a62c72fcf5cf9ffff64cb3252d0c8fde25
             }
             // once toDo empty, we have found a full piece
             // check that it has enough pixels and then add that pieces to the collection of pieces
             if (curPiecePixels >= minPieceSize) {
-                PuzzlePieces.append(PuzzlePixels);
+                //PuzzlePieces.append(PuzzlePixels);
 
                 //crop piece and add it to pieces
                 QRect cropRect(minX, minY, maxX-minX, maxY-minY);
                 QImage croppedPiece = piece.copy(cropRect);
                 pieces.append(croppedPiece);
+                qDebug() << "Piece of size" << curPiecePixels;
             }
         }
     }
+}
+
+/*
+Stores each puzzle piece found as a binary matrix.
+Takes the list of QImage puzzle pieces and turns it into a list of matricies
+*/
+void PuzzleSolverLayout::pieceOutput(){
+    for (int iImg=0; iImg < pieces.size(); iImg++) {
+        pieceMatricies.append(imageToMatrix(pieces[iImg]));
+    }
+}
+
+/*
+Helper function to turns each individual QImage into a matrix of 0's for background and 1's for peices
+    input: QImage of a piece
+    output: Matrix representaion of that piece
+*/
+QVector<QVector<int>> PuzzleSolverLayout::imageToMatrix(QImage &pieceImg) {
+    int C = pieceImg.width(), R = pieceImg.height();
+    QVector<QVector<int>> matrix(R, QVector<int>(C, 0));
+
+    for (int iY=0; iY < R; ++iY) {
+        for (int iX=0; iX < C; ++iX) {
+            // QUESTION HERE -- should we be storing redImage so that we can use red instead of isShadeOfBlack ?
+            QRgb pix = image.pixel(iX, iY);
+            if (!isShadeOfBlack(pix)) {
+                matrix[iX][iY] = 1;
+            }
+        }
+    }
+    return matrix;
 }

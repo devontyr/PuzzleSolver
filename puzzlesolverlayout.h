@@ -11,12 +11,15 @@ class PuzzleSolverLayout: public QWidget
     QGraphicsScene* scene;
     QGraphicsView *solverInterface;
     QList<QImage> pieces;
+    QList<QVector<QVector<int>>> pieceMatricies;
 
     bool isShadeOfWhite(const QRgb &color);
     bool isShadeOfBlack(const QRgb &color);
     bool isSurroundedRed(int pixelX, int pixelY);
     void pieceSeperator(QImage& image, QImage& redImage);
     void processImage(QImage& image);
+    void pieceOutput();
+    QVector<QVector<int>> imageToMatrix(QImage &pieceImg);
 
 public:
     explicit PuzzleSolverLayout(const QImage &_image);
