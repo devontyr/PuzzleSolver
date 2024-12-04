@@ -221,6 +221,9 @@ void MainWindow::processSlot() {
     addImageAct->setEnabled(false);
     addImageButton->setEnabled(false);
 
+    processAct->setEnabled(false);
+    processButton->setEnabled(false);
+
     solvePuzzleAct->setEnabled(true);
     solveButton->setEnabled(true);
 }
