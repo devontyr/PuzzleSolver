@@ -3,7 +3,7 @@
 #include <QtWidgets>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), imageViewer(nullptr) {
+    : QMainWindow(parent), imageViewer(nullptr), processed(false) {
 
     setWindowTitle("Puzzle Solver");
 
@@ -124,7 +124,7 @@ void MainWindow::openImageSlot() {
 
     lastDir = QFileInfo(fName).absolutePath();
 
-    if (imageViewer) delete imageViewer;
+    // if (imageViewer) delete imageViewer;
     imageViewer = new ImageViewer(this);
 
     placeholder->setLayout(new QVBoxLayout());
@@ -164,7 +164,6 @@ void MainWindow::processSlot() {
         return;
     }
 
-    // Get all pixmap items from the ImageViewer's scene
     QList<QGraphicsItem *> items = imageViewer->items();
     QList<QImage> images;
 
@@ -212,6 +211,7 @@ void MainWindow::processSlot() {
         delete layout;
     }
 
+    processed = true;
     scrollArea->setVisible(false);
     if (puzzleLayout) delete puzzleLayout;
 
@@ -268,16 +268,21 @@ void MainWindow::resetSlot() {
     resetAct->setEnabled(false);
     resetButton->setEnabled(false);
 
-    if (puzzleLayout) {
-        mainLayout->removeWidget(puzzleLayout);
-        delete puzzleLayout;
-        puzzleLayout = nullptr;
+    if (processed) {
+        if (puzzleLayout && puzzleLayout != nullptr) {
+            mainLayout->removeWidget(puzzleLayout);
+            delete puzzleLayout;
+            puzzleLayout = nullptr;
+        }
+    } else {
+        if (imageViewer && imageViewer != nullptr) {
+            delete imageViewer;
+            imageViewer = nullptr;
+        }
     }
+    qDebug() << "got here";
 
-    if (imageViewer) {
-        delete imageViewer;
-        imageViewer = nullptr;
-    }
+    processed = false;
 
     if (placeholder) {
         if (placeholder->layout()) {
@@ -291,5 +296,3 @@ void MainWindow::resetSlot() {
 
     update();
 }
-
-
