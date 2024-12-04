@@ -1,4 +1,4 @@
-#include "puzzlesolverlayout.h"
+#include "imageprocess.h"
 #include "interactivepiece.h"
 #include "puzzlepiece.h"
 
@@ -10,7 +10,7 @@ Main method to process an image into seperate and display all puzzle pieces
     input: an image
     output: displays all puzzle pieces and org image on the screen
 */
-PuzzleSolverLayout::PuzzleSolverLayout(const QImage &_image):image(_image) {
+ImageProcess::ImageProcess(const QImage &_image):image(_image) {
     QImage imageToProcess = image.copy();
     processImage(imageToProcess);
     pieceSeperator(image, redImage);
@@ -39,7 +39,7 @@ Pre-processes an image red. Looks at the 8 surrounding pixels for each pixel to 
     input: image
     output: updates redImage to a processed version
 */
-void PuzzleSolverLayout::processImage(QImage &image){
+void ImageProcess::processImage(QImage &image){
     redImage = QImage(image.width(), image.height(), QImage::Format_RGB32);
 
     for (int y = 0; y < image.height(); ++y) {
@@ -70,7 +70,7 @@ Helper method to check if a color is part of the white background
     input: a color
     output: true or false
 */
-bool PuzzleSolverLayout::isShadeOfWhite(const QRgb &color) {
+bool ImageProcess::isShadeOfWhite(const QRgb &color) {
     int threshold = 10; // larger num if we want to accept more gray colors as "white"
     int minBrightness = 169; // smaller num allows more gray colors as "white"
 
@@ -92,7 +92,7 @@ Helper method to check if a color is part of the black background
     input: a color
     output: true or false
 */
-bool PuzzleSolverLayout::isShadeOfBlack(const QRgb &color) {
+bool ImageProcess::isShadeOfBlack(const QRgb &color) {
     //values are between 0-255
     int r = qRed(color);
     int g = qGreen(color);
@@ -117,7 +117,7 @@ Helper method to checks if surrounding 8 pixels of a given pixel coord are red
     input: a color
     output: true or false
 */
-bool PuzzleSolverLayout::isSurroundedRed(int pixelX, int pixelY){
+bool ImageProcess::isSurroundedRed(int pixelX, int pixelY){
     int redCount = 0;
     if ((pixelX <= 1) || (pixelY <=1) || (pixelX >= redImage.width() - 2) || (pixelY >= redImage.height() - 2)){
         return false;
@@ -148,7 +148,7 @@ BFS on the redImage to cut out each individual puzzle piece.
     output:
             pieces -- a list of QImage puzzle pieces
 */
-void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
+void ImageProcess::pieceSeperator(QImage &image, QImage &redImage) {
     //QSet<QPoint> PuzzlePixels; QVector<QSet<QPoint>> PuzzlePieces;
     QList<QPoint> toDo;
     toDo.reserve(100000);
@@ -221,7 +221,7 @@ void PuzzleSolverLayout::pieceSeperator(QImage &image, QImage &redImage) {
 Stores each puzzle piece found as a binary matrix.
 Takes the list of QImage puzzle pieces and turns it into a list of matricies
 */
-void PuzzleSolverLayout::pieceOutput(){
+void ImageProcess::pieceOutput(){
     for (int iImg=0; iImg < pieces.size(); iImg++) {
         pieceMatricies.append(imageToMatrix(pieces[iImg]));
     }
@@ -232,7 +232,7 @@ Helper function to turns each individual QImage into a matrix of 0's for backgro
     input: QImage of a piece
     output: Matrix representaion of that piece
 */
-QVector<QVector<int>> PuzzleSolverLayout::imageToMatrix(QImage &pieceImg) {
+QVector<QVector<int>> ImageProcess::imageToMatrix(QImage &pieceImg) {
     int C = pieceImg.width(), R = pieceImg.height();
     QVector<QVector<int>> matrix(R, QVector<int>(C, 0));
 
@@ -246,4 +246,31 @@ QVector<QVector<int>> PuzzleSolverLayout::imageToMatrix(QImage &pieceImg) {
         }
     }
     return matrix;
+}
+
+/*
+Takes in a single puzzle piece matrix and an ideal corner and returns the best macth coordinates for that corner.
+*/
+void ImageProcess::findCorner(QVector<QVector<int>> piece, QVector<QVector<int>> idealCorner) {
+    //XOR a corner matrix to all possible parts of piece matrix, return the best match
+}
+
+/*
+Takes in a single puzzle piece matrix and returns an edge (a list of pair coordinates).
+*/
+void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
+    //start at left top corner, get top edge
+    //from right top corner, get right edge
+    //from bottom right corner, get bottom edge
+    //from bottom left corner, get left edge
+}
+
+/*
+Uses the helper methods to store edges in puzzle piece class for each piece.
+*/
+void ImageProcess::mapEdges(QVector<QVector<int>> piece) {
+    //create 4 pre-set matricies for the corners
+    //call method to find each of the corners
+    //call method to find each of the edges
+    //store edges in puzzle piece class for each piece
 }
