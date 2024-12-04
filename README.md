@@ -1,3 +1,16 @@
+# Developers
+
+- [AJ Pezza](https://github.com/AJPez24)
+- [Alex Nichols](https://github.com/alexnicholsamu)
+- [Danny Smith](https://github.com/Danny-6933)
+- [Devon Tyrie](https://github.com/devontyr)
+
+## Installation Guide
+
+Built and tested on Qt Creator 6.7.2
+
+The 'only' file needed is the **PuzzleSolver.pro** file, however we have cosmetic files like sound effects, icons, etc. 
+
 ## User Guide
 
 ### Getting Started  
