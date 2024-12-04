@@ -6,6 +6,16 @@ puzzlepiece::puzzlepiece(int id, const vector<pair<int, int>>& north, const vect
 puzzlepiece::puzzlepiece() : id(0), location(pair<int, int>(-1, -1)) {};
 
 void puzzlepiece::rotate(){
+    /*
+
+    Rotates the piece 90 degrees clockwise
+    Input:
+        None
+    Output:
+        None
+
+    */
+
     const vector<pair<int, int>> temp = north;
     north = west;
     west = south;
@@ -14,6 +24,16 @@ void puzzlepiece::rotate(){
 }
 
 void puzzlepiece::print_piece(){
+    /*
+
+    Helper function to print out the details of each piece, i.e. if it has been fitted and each side
+    Input:
+        None
+    Output:
+        None (I/O)
+
+    */
+
     cout << "id: " << id << endl;
     cout << "location: (" << location.first << ", " << location.second << ")" << endl;
 
