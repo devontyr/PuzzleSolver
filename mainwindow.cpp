@@ -215,7 +215,7 @@ void MainWindow::processSlot() {
     scrollArea->setVisible(false);
     if (puzzleLayout) delete puzzleLayout;
 
-    puzzleLayout = new PuzzleSolverLayout(stitchedImage);
+    puzzleLayout = new ImageProcess(stitchedImage);
     mainLayout->addWidget(puzzleLayout);
 
     addImageAct->setEnabled(false);
