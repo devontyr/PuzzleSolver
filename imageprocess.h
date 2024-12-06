@@ -1,9 +1,10 @@
-#ifndef PUZZLESOLVERLAYOUT_H
-#define PUZZLESOLVERLAYOUT_H
+#ifndef IMAGEPROCESS_H
+#define IMAGEPROCESS_H
 
 #include <QtWidgets>
+#include "puzzlepiece.h"
 
-class PuzzleSolverLayout: public QWidget
+class ImageProcess: public QWidget
 {
     Q_OBJECT
     QImage image;
@@ -20,9 +21,12 @@ class PuzzleSolverLayout: public QWidget
     void processImage(QImage& image);
     void pieceOutput();
     QVector<QVector<int>> imageToMatrix(QImage &pieceImg);
+    void findCorner(QVector<QVector<int>> piece, QVector<QVector<int>> idealCorner);
+    void findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction);
+    void mapEdges(QVector<QVector<int>> piece);
 
 public:
-    explicit PuzzleSolverLayout(const QImage &_image);
+    explicit ImageProcess(const QImage &_image);
 };
 
-#endif // PUZZLESOLVERLAYOUT_H
+#endif // IMAGEPROCESS_H
