@@ -13,6 +13,7 @@ class ImageProcess: public QWidget
     QGraphicsView *solverInterface;
     QList<QImage> pieces;
     QList<QVector<QVector<int>>> pieceMatricies;
+    int puzzlepiece_id = 0;
 
     bool isShadeOfWhite(const QRgb &color);
     bool isShadeOfBlack(const QRgb &color);
@@ -21,9 +22,9 @@ class ImageProcess: public QWidget
     void processImage(QImage& image);
     void pieceOutput();
     QVector<QVector<int>> imageToMatrix(QImage &pieceImg);
-    void findCorner(QVector<QVector<int>> piece, QVector<QVector<int>> idealCorner);
-    void findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction);
-    void mapEdges(QVector<QVector<int>> piece);
+    pair<int, int> findCorner(QVector<QVector<int>>& piece, QVector<QVector<int>>& idealCorner);
+    vector<pair<int, int>> findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction);
+    puzzlepiece mapEdges(QVector<QVector<int>> piece);
 
 public:
     explicit ImageProcess(const QImage &_image);

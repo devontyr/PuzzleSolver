@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <imageviewer.h>
 #include <QtWidgets>
+#include "puzzlepiece.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), imageViewer(nullptr), processed(false) {
