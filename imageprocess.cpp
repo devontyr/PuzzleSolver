@@ -253,6 +253,22 @@ Takes in a single puzzle piece matrix and an ideal corner and returns the best m
 */
 void ImageProcess::findCorner(QVector<QVector<int>> piece, QVector<QVector<int>> idealCorner) {
     //XOR a corner matrix to all possible parts of piece matrix, return the best match
+
+    // Current best match pixel variable
+    // Current best match value variable
+
+    //For each bit in the matrix,
+        //XOR with the idealCorner matrix
+        //If the XOR value isi greater than the current best match value, update both the current best values with the current pixel and XOR value
+    //
+
+    //Return the current best pixel after all the matrix bits have been checked.
+
+
+
+
+
+
 }
 
 /*
