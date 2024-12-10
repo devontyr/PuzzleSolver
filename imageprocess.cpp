@@ -226,6 +226,7 @@ Takes the list of QImage puzzle pieces and turns it into a list of matricies
 void ImageProcess::pieceOutput(){
     for (int iImg=0; iImg < pieces.size(); iImg++) {
         pieceMatricies.append(imageToMatrix(pieces[iImg]));
+        qDebug() << "matrix";
     }
     qDebug() << "piece matricies: " << pieceMatricies;
 }
@@ -239,12 +240,14 @@ QVector<QVector<int>> ImageProcess::imageToMatrix(QImage &pieceImg) {
     int C = pieceImg.width(), R = pieceImg.height();
     QVector<QVector<int>> matrix(R, QVector<int>(C, 0));
 
+    qDebug() << "width" << C << "height" << R;
     for (int iY=0; iY < R; ++iY) {
         for (int iX=0; iX < C; ++iX) {
             // QUESTION HERE -- should we be storing redImage so that we can use red instead of isShadeOfBlack ?
             QRgb pix = image.pixel(iX, iY);
             if (!isShadeOfBlack(pix)) {
                 matrix[iX][iY] = 1;
+                qDebug() << iX << iY << "reassinged one value in matrix";
             }
         }
     }
@@ -343,10 +346,10 @@ puzzlepiece ImageProcess::mapEdges(QVector<QVector<int>> piece) {
     puzzlepiece build_piece; // we also need to add piece id stuff
     build_piece.id = puzzlepiece_id;
     puzzlepiece_id++;
-    build_piece.north = findEdge(tl_coord, tr_coord, {-1, 0});
-    build_piece.east = findEdge(tr_coord, br_coord, {0, 1});
-    build_piece.south = findEdge(br_coord, bl_coord, {1, 0});
-    build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
+    // build_piece.north = findEdge(tl_coord, tr_coord, {-1, 0});
+    // build_piece.east = findEdge(tr_coord, br_coord, {0, 1});
+    // build_piece.south = findEdge(br_coord, bl_coord, {1, 0});
+    // build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
     return build_piece;
 
 }
