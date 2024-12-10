@@ -34,6 +34,7 @@ class MainWindow : public QMainWindow
 
     QAction *resetAct;
     QPushButton *resetButton;
+    bool processed;
 
 
 public:
