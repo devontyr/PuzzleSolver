@@ -263,13 +263,6 @@ void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair
     vector<pair<int, int>> edge;
     edge.push_back(corner1); // start at corner 1
 
-    // check every line until you get to a row of all 1's
-    // top: x+corner1.x to x.corner2
-    // right:
-    // bottom:
-    // left:
-    // for each value, check if it is touching a 0 -- if yes, add to edge
-
     // determine direction: right(1,0) down(0,-1) left(-1, 0) up(0,1)
     pair<int, int> right(1,0); pair<int, int> down(0, -1); pair<int, int> left(-1,0); pair<int, int> up(0,1);
     if (direction == right) pair<int, int> checkdir = up;
@@ -277,7 +270,13 @@ void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair
     if (direction == left) pair<int, int> checkdir = down;
     if (direction == up) pair<int, int> checkdir = left;
 
-    // move in the direction as long as the value at curr=1 and current+checkdir=0
+    // check every line until you get to a row of all 1's
+        // top: corner1.x to corner2.x
+        // right: corner1.y to corner2.y
+        // bottom: corner2.x to corner1.x
+        // left: corner2.y to corner1.y
+
+    // for each value, check if it is touching a 0 -- if yes, add to edge
 
 }
 
