@@ -258,11 +258,17 @@ pair<int, int> ImageProcess::findCorner(QVector<QVector<int>>& piece, QVector<QV
 /*
 Takes in a single puzzle piece matrix and returns an edge (a list of pair coordinates).
 */
-vector<pair<int, int>> ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
+void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
 
-    //move from corner1 to corner2, recording the coordinates of the edge (1's)
     vector<pair<int, int>> edge;
     edge.push_back(corner1); // start at corner 1
+
+    // check every line until you get to a row of all 1's
+    // top: x+corner1.x to x.corner2
+    // right:
+    // bottom:
+    // left:
+    // for each value, check if it is touching a 0 -- if yes, add to edge
 
     // determine direction: right(1,0) down(0,-1) left(-1, 0) up(0,1)
     pair<int, int> right(1,0); pair<int, int> down(0, -1); pair<int, int> left(-1,0); pair<int, int> up(0,1);
