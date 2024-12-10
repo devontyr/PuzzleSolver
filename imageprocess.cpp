@@ -251,14 +251,14 @@ QVector<QVector<int>> ImageProcess::imageToMatrix(QImage &pieceImg) {
 /*
 Takes in a single puzzle piece matrix and an ideal corner and returns the best macth coordinates for that corner.
 */
-void ImageProcess::findCorner(QVector<QVector<int>> piece, QVector<QVector<int>> idealCorner) {
+pair<int, int> ImageProcess::findCorner(QVector<QVector<int>>& piece, QVector<QVector<int>>& idealCorner) {
     //XOR a corner matrix to all possible parts of piece matrix, return the best match
 }
 
 /*
 Takes in a single puzzle piece matrix and returns an edge (a list of pair coordinates).
 */
-void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
+vector<pair<int, int>> ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
 
     //move from corner1 to corner2, recording the coordinates of the edge (1's)
     vector<pair<int, int>> edge;
@@ -273,15 +273,72 @@ void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair
 
     // move in the direction as long as the value at curr=1 and current+checkdir=0
 
-
 }
 
 /*
 Uses the helper methods to store edges in puzzle piece class for each piece.
 */
-void ImageProcess::mapEdges(QVector<QVector<int>> piece) {
+puzzlepiece ImageProcess::mapEdges(QVector<QVector<int>> piece) {
     //create 4 pre-set matricies for the corners
     //call method to find each of the corners
     //call method to find each of the edges
     //store edges in puzzle piece class for each piece
+
+    QVector<QVector<int>> tl_corner, tr_corner, bl_corner, br_corner;
+
+    tl_corner = {
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 1, 1, 1, 1},
+        {0, 0, 0, 1, 1, 1, 1},
+        {0, 0, 0, 1, 1, 1, 1},
+        {0, 0, 0, 1, 1, 1, 1}
+    };
+
+    tr_corner = {
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0}
+    };
+
+    br_corner = {
+        {1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0},
+        {1, 1, 1, 1, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0}
+    };
+
+    bl_corner = {
+        {0, 0, 0, 1, 1, 1, 1},
+        {0, 0, 0, 1, 1, 1, 1},
+        {0, 0, 0, 1, 1, 1, 1},
+        {0, 0, 0, 1, 1, 1, 1},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0},
+    };
+
+
+    pair<int, int> tl_coord = findCorner(piece, tl_corner);
+    pair<int, int> tr_coord = findCorner(piece, tr_corner);
+    pair<int, int> bl_coord = findCorner(piece, bl_corner);
+    pair<int, int> br_coord = findCorner(piece, br_corner);
+
+    puzzlepiece build_piece; // we also need to add piece id stuff
+    build_piece.id = puzzlepiece_id;
+    puzzlepiece_id++;
+    build_piece.north = findEdge(tl_coord, tr_coord, {-1, 0});
+    build_piece.east = findEdge(tr_coord, br_coord, {0, 1});
+    build_piece.south = findEdge(br_coord, bl_coord, {1, 0});
+    build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
+    return build_piece;
+
 }
