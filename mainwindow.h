@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "puzzlesolverlayout.h"
+#include "imageprocess.h"
+#include "imageviewer.h"
 #include "interactivepiece.h"
 #include "imageviewer.h"
 
@@ -10,7 +11,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
     QString lastDir;
-    PuzzleSolverLayout *puzzleLayout;
+    ImageProcess *puzzleLayout;
     QImage processedImage;
     QPoint orgImageCenter;
     interactivePiece* interactivePieceLayout;

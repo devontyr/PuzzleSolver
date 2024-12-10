@@ -215,6 +215,8 @@ void ImageProcess::pieceSeperator(QImage &image, QImage &redImage) {
             }
         }
     }
+
+    pieceOutput();
 }
 
 /*
@@ -225,6 +227,7 @@ void ImageProcess::pieceOutput(){
     for (int iImg=0; iImg < pieces.size(); iImg++) {
         pieceMatricies.append(imageToMatrix(pieces[iImg]));
     }
+    qDebug() << "piece matricies: " << pieceMatricies;
 }
 
 /*
