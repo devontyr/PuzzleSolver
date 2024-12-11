@@ -226,9 +226,7 @@ Takes the list of QImage puzzle pieces and turns it into a list of matricies
 void ImageProcess::pieceOutput(){
     for (int iImg=0; iImg < pieces.size(); iImg++) {
         pieceMatricies.append(imageToMatrix(pieces[iImg]));
-        qDebug() << "matrix";
     }
-    qDebug() << "piece matricies: " << pieceMatricies;
 }
 
 /*
@@ -241,13 +239,12 @@ QVector<QVector<int>> ImageProcess::imageToMatrix(QImage &pieceImg) {
     QVector<QVector<int>> matrix(R, QVector<int>(C, 0));
 
     qDebug() << "width" << C << "height" << R;
-    for (int iY=0; iY < R; ++iY) {
-        for (int iX=0; iX < C; ++iX) {
+    for (int iRow=0; iRow < R; ++iRow) {
+        for (int iCol=0; iCol < C; ++iCol) {
             // QUESTION HERE -- should we be storing redImage so that we can use red instead of isShadeOfBlack ?
-            QRgb pix = image.pixel(iX, iY);
+            QRgb pix = image.pixel(iCol, iRow);
             if (!isShadeOfBlack(pix)) {
-                matrix[iX][iY] = 1;
-                qDebug() << iX << iY << "reassinged one value in matrix";
+                matrix[iRow][iCol] = 1;
             }
         }
     }
