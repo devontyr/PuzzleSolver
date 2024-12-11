@@ -261,7 +261,7 @@ pair<int, int> ImageProcess::findCorner(QVector<QVector<int>>& piece, QVector<QV
 /*
 Takes in a single puzzle piece matrix and returns an edge (a list of pair coordinates).
 */
-void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
+vector<pair<int, int>> ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
 
     vector<pair<int, int>> edge;
     edge.push_back(corner1); // start at corner 1
@@ -281,6 +281,7 @@ void ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair
 
     // for each value, check if it is touching a 0 -- if yes, add to edge
 
+    return edge;
 }
 
 /*
@@ -343,10 +344,9 @@ puzzlepiece ImageProcess::mapEdges(QVector<QVector<int>> piece) {
     puzzlepiece build_piece; // we also need to add piece id stuff
     build_piece.id = puzzlepiece_id;
     puzzlepiece_id++;
-    // build_piece.north = findEdge(tl_coord, tr_coord, {-1, 0});
-    // build_piece.east = findEdge(tr_coord, br_coord, {0, 1});
-    // build_piece.south = findEdge(br_coord, bl_coord, {1, 0});
-    // build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
+    build_piece.north = findEdge(tl_coord, tr_coord, {-1, 0});
+    build_piece.east = findEdge(tr_coord, br_coord, {0, 1});
+    build_piece.south = findEdge(br_coord, bl_coord, {1, 0});
+    build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
     return build_piece;
-
 }
