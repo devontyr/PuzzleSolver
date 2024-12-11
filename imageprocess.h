@@ -21,7 +21,7 @@ class ImageProcess: public QWidget
     void processImage(QImage& image);
     void pieceOutput();
     QVector<QVector<int>> imageToMatrix(QImage &pieceImg);
-    void findCorner(QVector<QVector<int>> piece, QVector<QVector<int>> idealCorner);
+    pair <int, int> findCorner(QVector<QVector<int>> piece, QVector<QVector<int>> idealCorner);
     void findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction);
     void mapEdges(QVector<QVector<int>> piece);
 
