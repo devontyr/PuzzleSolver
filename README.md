@@ -44,4 +44,5 @@ At any point, the **Reset** button can be clicked to return the application to i
 6. PuzzleSolver does all algorithmic solving of the puzzle.
 
 ### Known Issues
-Currently missing edge identification needed to pass to the solving algorithm in order to solve the puzzle
+Does not take into account rotation issues for each individual piece.
+Currently missing edge identification needed to pass to the solving algorithm in order to solve the puzzle.
