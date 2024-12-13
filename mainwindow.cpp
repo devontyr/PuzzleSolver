@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(saveAct, &QAction::triggered, this, &MainWindow::saveSlot);
     saveAct->setShortcut(Qt::CTRL | Qt::Key_S);
 
+    loadSaveAct = new QAction("Load");
+    connect(loadSaveAct, &QAction::triggered, this, &MainWindow::loadSaveSlot);
+
     addImageAct = new QAction("Add Image");
     addImageButton = new QPushButton("Add Image");
     connect(addImageButton, &QPushButton::clicked, addImageAct, &QAction::trigger);
@@ -67,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     QMenu *fileMenu = new QMenu("&File");
     fileMenu->addAction(uploadAct);
     fileMenu->addAction(saveAct);
+    fileMenu->addAction(loadSaveAct);
     fileMenu->addAction(addImageAct);
     fileMenu->addAction(processAct);
     fileMenu->addAction(solvePuzzleAct);
@@ -148,37 +152,61 @@ void MainWindow::openImageSlot() {
 }
 
 void MainWindow::loadSaveSlot() {
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "Open Image Process State",
+        QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+        "Binary Files (*.bin)"
+        );
 
+    if (filePath.isEmpty()) return;
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(this, "Error", QString("Cannot open file \"%1\"").arg(filePath));
+        return;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    // Remove the old puzzleLayout
+    if (puzzleLayout) {
+        mainLayout->removeWidget(puzzleLayout);
+        delete puzzleLayout;
+        puzzleLayout = nullptr;
+    }
+
+    // Create and populate a new puzzleLayout
+    puzzleLayout = new ImageProcess(QImage());
+    puzzleLayout->deserialize(data);
+
+    // Add the new puzzleLayout to the UI
+    mainLayout->addWidget(puzzleLayout);
 }
 
+
+
+
 void MainWindow::saveSlot() {
-    interactivePiece* layout = puzzleLayout->getViewer();
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        "Save Image Process State",
+        QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+        "Binary Files (*.bin)"
+        );
 
-    connect(layout, &interactivePiece::emitSave, this, [this](const QString &data) {
-        QString fOutName = QFileDialog::getSaveFileName(
-            this,
-            "Save file to:",
-            QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), tr("BIN file (*.bin)"));
+    if (filePath.isEmpty()) return;
 
-        if (fOutName.isEmpty()) return;
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        QMessageBox::information(this, "Error", QString("Cannot write to file \"%1\"").arg(filePath));
+        return;
+    }
 
-        QFile outFile(fOutName);
-
-        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-            QMessageBox::information(this, "Error", QString("Cannot write to file \"%1\"").arg(fOutName));
-            return;
-        }
-
-        // qDebug() << "Saving file to:" << fOutName;
-
-        QTextStream out(&outFile);
-        out << data;
-
-        outFile.close();
-
-    });
-
-    layout->saveDataSlot();
+    QByteArray data = puzzleLayout->serialize();
+    file.write(data);
+    file.close();
 }
 
 

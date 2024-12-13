@@ -27,10 +27,14 @@ class ImageProcess: public QWidget
     pair<int, int> findCorner(QVector<QVector<int>>& piece, QVector<QVector<int>>& idealCorner);
     vector<pair<int, int>> findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction);
     puzzlepiece mapEdges(QVector<QVector<int>> piece);
+    void loadLayoutData(const QByteArray &data);
+    void recreateUI();
 
 public:
     explicit ImageProcess(const QImage &_image);
     interactivePiece* getViewer();
+    QByteArray serialize() const;
+    void deserialize(const QByteArray &data);
 };
 
 #endif // IMAGEPROCESS_H

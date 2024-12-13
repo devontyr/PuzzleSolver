@@ -336,3 +336,68 @@ puzzlepiece ImageProcess::mapEdges(QVector<QVector<int>> piece) {
 interactivePiece* ImageProcess::getViewer() {
     return interactivePieceLayout;
 }
+
+QByteArray ImageProcess::serialize() const {
+    QByteArray byteArray;
+    QDataStream out(&byteArray, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_15);
+
+    if (!image.isNull()) {
+        QByteArray imageByteArray;
+        QBuffer buffer(&imageByteArray);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer, "PNG");
+        out << imageByteArray;
+    }
+
+    if (interactivePieceLayout) {
+        QByteArray interactiveData;
+        interactivePieceLayout->saveDataSlot();
+        out << interactiveData;
+    }
+
+    return byteArray;
+}
+
+void ImageProcess::deserialize(const QByteArray &data) {
+    QDataStream in(data);
+    in.setVersion(QDataStream::Qt_5_15);
+
+    QByteArray imageByteArray;
+    in >> imageByteArray;
+    QImage loadedImage;
+    loadedImage.loadFromData(imageByteArray, "PNG");
+
+    image = loadedImage;
+
+    QByteArray interactiveData;
+    in >> interactiveData;
+    if (interactivePieceLayout) {
+        delete interactivePieceLayout;
+    }
+
+    interactivePieceLayout = new interactivePiece(QList<QImage>());
+    interactivePieceLayout->loadData(interactiveData);
+
+    recreateUI();
+}
+
+
+void ImageProcess::recreateUI() {
+    QLayout *currentLayout = layout();
+    if (currentLayout) {
+        QLayoutItem *item;
+        while ((item = currentLayout->takeAt(0)) != nullptr) {
+            delete item->widget();
+            delete item;
+        }
+        delete currentLayout;
+    }
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    setLayout(mainLayout);
+
+    if (interactivePieceLayout) {
+        mainLayout->addWidget(interactivePieceLayout);
+    }
+}
+

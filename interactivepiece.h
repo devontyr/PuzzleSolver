@@ -15,12 +15,15 @@ protected:
     void keyPressEvent(QKeyEvent *evt) override;
     void mousePressEvent(QMouseEvent *evt) override;
     void mouseReleaseEvent(QMouseEvent *evt) override;
+    void addPiece(const QImage &image, const QPointF &position, double rotation, double scale);
+
 
 signals:
     void emitSave(const QString &serializedData);
 
 public slots:
     void saveDataSlot();
+    void loadData(const QByteArray &data);
 
 private:
     QGraphicsScene *scene;

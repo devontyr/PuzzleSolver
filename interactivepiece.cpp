@@ -167,4 +167,32 @@ void interactivePiece::saveDataSlot() {
     emit emitSave(byteArray);
 }
 
+void interactivePiece::loadData(const QByteArray &data) {
+    QDataStream in(data);
+    in.setVersion(QDataStream::Qt_5_15);
+
+    int itemCount;
+    in >> itemCount;
+
+    for (int i = 0; i < itemCount; ++i) {
+        QPointF position;
+        double rotation, scale;
+        QImage image;
+
+        in >> position >> rotation >> scale >> image;
+
+        addPiece(image, position, rotation, scale);
+    }
+}
+
+void interactivePiece::addPiece(const QImage &image, const QPointF &position, double rotation, double scale) {
+    QGraphicsPixmapItem *pixmapItem = new QGraphicsPixmapItem(QPixmap::fromImage(image));
+    pixmapItem->setFlags(QGraphicsItem::ItemIsMovable);
+    pixmapItem->setPos(position);
+    pixmapItem->setRotation(rotation);
+    pixmapItem->setScale(scale);
+
+    scene->addItem(pixmapItem);
+}
+
 
