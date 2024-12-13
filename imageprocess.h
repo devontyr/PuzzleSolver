@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 #include "puzzlepiece.h"
+#include "interactivepiece.h"
 
 class ImageProcess: public QWidget
 {
@@ -10,6 +11,7 @@ class ImageProcess: public QWidget
     QImage image;
     QImage redImage;
     QGraphicsScene* scene;
+    interactivePiece* interactivePieceLayout;
     QGraphicsView *solverInterface;
     QList<QImage> pieces;
     QList<QVector<QVector<int>>> pieceMatricies;
@@ -28,6 +30,7 @@ class ImageProcess: public QWidget
 
 public:
     explicit ImageProcess(const QImage &_image);
+    interactivePiece* getViewer();
 };
 
 #endif // IMAGEPROCESS_H

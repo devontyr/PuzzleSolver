@@ -16,6 +16,12 @@ protected:
     void mousePressEvent(QMouseEvent *evt) override;
     void mouseReleaseEvent(QMouseEvent *evt) override;
 
+signals:
+    void emitSave(const QString &serializedData);
+
+public slots:
+    void saveDataSlot();
+
 private:
     QGraphicsScene *scene;
     int currentZ;

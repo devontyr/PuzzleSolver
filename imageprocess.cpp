@@ -30,7 +30,7 @@ ImageProcess::ImageProcess(const QImage &_image):image(_image) {
 
     scene = new QGraphicsScene(this);
     solverInterface->setScene(scene);
-    interactivePiece* interactivePieceLayout = new interactivePiece(pieces);
+    interactivePieceLayout = new interactivePiece(pieces);
     mainLayout->addWidget(interactivePieceLayout);
 }
 
@@ -331,4 +331,8 @@ puzzlepiece ImageProcess::mapEdges(QVector<QVector<int>> piece) {
     build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
     return build_piece;
 
+}
+
+interactivePiece* ImageProcess::getViewer() {
+    return interactivePieceLayout;
 }

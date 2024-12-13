@@ -12,7 +12,7 @@ SOURCES += \
     imageviewer.cpp \
     main.cpp \
     mainwindow.cpp \
-    puzzlesolverlayout.cpp \
+    imageprocess.cpp \
     puzzlepiece.cpp \
     interactivepiece.cpp \
     puzzle_solver.cpp
@@ -20,7 +20,8 @@ SOURCES += \
 HEADERS += \
     imageviewer.h \
     mainwindow.h \
-    puzzlesolverlayout.h \
+    imageprocess.h \
+    imageprocess.h \
     puzzlepiece.h \
     interactivepiece.h \
     puzzle_solver.h

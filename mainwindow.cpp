@@ -19,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(uploadAct, &QAction::triggered, this, &MainWindow::openImageSlot);
     uploadAct->setShortcut(Qt::CTRL | Qt::Key_U);
 
+    saveAct = new QAction("Save");
+    connect(saveAct, &QAction::triggered, this, &MainWindow::saveSlot);
+    saveAct->setShortcut(Qt::CTRL | Qt::Key_S);
+
     addImageAct = new QAction("Add Image");
     addImageButton = new QPushButton("Add Image");
     connect(addImageButton, &QPushButton::clicked, addImageAct, &QAction::trigger);
@@ -39,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     solveButton = new QPushButton("Solve");
     connect(solveButton, &QPushButton::clicked, solvePuzzleAct, &QAction::trigger);
     connect(solvePuzzleAct, &QAction::triggered, this, &MainWindow::solveSlot);
-    solvePuzzleAct->setShortcut(Qt::CTRL | Qt::Key_S);
+    solvePuzzleAct->setShortcut(Qt::CTRL | Qt::Key_F);
     solvePuzzleAct->setEnabled(false);
     solveButton->setEnabled(false);
 
@@ -62,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Menu Bar Setup
     QMenu *fileMenu = new QMenu("&File");
     fileMenu->addAction(uploadAct);
+    fileMenu->addAction(saveAct);
     fileMenu->addAction(addImageAct);
     fileMenu->addAction(processAct);
     fileMenu->addAction(solvePuzzleAct);
@@ -112,7 +117,6 @@ MainWindow::~MainWindow() {
 
 }
 
-
 /*
 Handles and processes a given file into puzzle pieces when user opens any image
 */
@@ -142,6 +146,41 @@ void MainWindow::openImageSlot() {
     resetAct->setEnabled(true);
     resetButton->setEnabled(true);
 }
+
+void MainWindow::loadSaveSlot() {
+
+}
+
+void MainWindow::saveSlot() {
+    interactivePiece* layout = puzzleLayout->getViewer();
+
+    connect(layout, &interactivePiece::emitSave, this, [this](const QString &data) {
+        QString fOutName = QFileDialog::getSaveFileName(
+            this,
+            "Save file to:",
+            QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), tr("BIN file (*.bin)"));
+
+        if (fOutName.isEmpty()) return;
+
+        QFile outFile(fOutName);
+
+        if (!outFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            QMessageBox::information(this, "Error", QString("Cannot write to file \"%1\"").arg(fOutName));
+            return;
+        }
+
+        // qDebug() << "Saving file to:" << fOutName;
+
+        QTextStream out(&outFile);
+        out << data;
+
+        outFile.close();
+
+    });
+
+    layout->saveDataSlot();
+}
+
 
 void MainWindow::addImageSlot() {
     QString fName = QFileDialog::getOpenFileName(this, "Select Additional Image", lastDir, "Image Files (*.png *.jpg *.bmp *.jpeg)");
@@ -216,7 +255,7 @@ void MainWindow::processSlot() {
     scrollArea->setVisible(false);
     if (puzzleLayout) delete puzzleLayout;
 
-    puzzleLayout = new PuzzleSolverLayout(stitchedImage);
+    puzzleLayout = new ImageProcess(stitchedImage);
     mainLayout->addWidget(puzzleLayout);
 
     addImageAct->setEnabled(false);

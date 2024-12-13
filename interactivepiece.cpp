@@ -144,3 +144,27 @@ void interactivePiece::mouseReleaseEvent(QMouseEvent *evt) {
 
     QGraphicsView::mouseReleaseEvent(evt);
 }
+
+void interactivePiece::saveDataSlot() {
+    QByteArray byteArray;
+    QDataStream out(&byteArray, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_15); // Ensure compatibility
+
+    QList<QGraphicsItem *> items = scene->items();
+    out << items.size();
+
+    for (QGraphicsItem *item : items) {
+        QGraphicsPixmapItem *pixmapItem = qgraphicsitem_cast<QGraphicsPixmapItem *>(item);
+        if (pixmapItem) {
+            out << pixmapItem->pos();
+            out << pixmapItem->rotation();
+            out << pixmapItem->scale();
+
+            QImage image = pixmapItem->pixmap().toImage();
+            out << image;
+        }
+    }
+    emit emitSave(byteArray);
+}
+
+
