@@ -285,7 +285,6 @@ void MainWindow::resetSlot() {
             imageViewer = nullptr;
         }
     }
-    qDebug() << "got here";
 
     processed = false;
 

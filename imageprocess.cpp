@@ -274,6 +274,20 @@ vector<pair<int, int>> ImageProcess::findEdge(pair<int, int> corner1, pair<int, 
     if (direction == up) pair<int, int> checkdir = left;
 
     // check every line until you get to a row of all 1's
+    int LeftXbound = corner1.first, RightXBound = corner2.first;
+    bool lineAllOnes = false;
+    int iCol=0;
+    for (int iRow=LeftXbound; iRow < RightXBound; ++iRow) {
+        while (!lineAllOnes) {
+            ++iCol;
+        }
+    }
+
+    //positon and direction matter
+    //add the pixel if its not the same as the previous (point hit once on way in and once on way out, trim it off)
+    //turn left if you can or move forward based on the rules of what is around you
+    //debug by painting it on the QImage
+
         // top: corner1.x to corner2.x
         // right: corner1.y to corner2.y
         // bottom: corner2.x to corner1.x
