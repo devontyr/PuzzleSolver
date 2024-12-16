@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include <imageviewer.h>
 #include <QtWidgets>
-#include "puzzlepiece.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), imageViewer(nullptr), processed(false) {
@@ -305,6 +304,7 @@ void MainWindow::processSlot() {
     solveButton->setEnabled(true);
 
     saveAct->setEnabled(true);
+
 }
 
 
@@ -362,7 +362,6 @@ void MainWindow::resetSlot() {
             imageViewer = nullptr;
         }
     }
-    qDebug() << "got here";
 
     processed = false;
 
