@@ -3,6 +3,7 @@
 
 #include <QtWidgets>
 #include "puzzlepiece.h"
+#include "interactivepiece.h"
 
 class ImageProcess: public QWidget
 {
@@ -14,6 +15,7 @@ class ImageProcess: public QWidget
     QList<QImage> pieces;
     QList<QVector<QVector<int>>> pieceMatricies;
     int puzzlepiece_id = 0;
+    interactivePiece* interactivePieceLayout;
 
     bool isShadeOfWhite(const QRgb &color);
     bool isShadeOfBlack(const QRgb &color);
@@ -26,8 +28,11 @@ class ImageProcess: public QWidget
     vector<pair<int, int>> findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction);
     puzzlepiece mapEdges(QVector<QVector<int>> piece);
 
+
 public:
     explicit ImageProcess(const QImage &_image);
+    QByteArray serialize();
+    void deserialize(const QByteArray &data);
 };
 
 #endif // IMAGEPROCESS_H

@@ -144,3 +144,84 @@ void interactivePiece::mouseReleaseEvent(QMouseEvent *evt) {
 
     QGraphicsView::mouseReleaseEvent(evt);
 }
+
+/*
+Serialized the class data to a QByteArray. This includes the piece location, rotation, and size
+*/
+QByteArray interactivePiece::serialize() {
+    QByteArray byteArray;
+    QDataStream out(&byteArray, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_15);
+
+    QList<QGraphicsItem *> items = scene->items();
+
+    QList<QGraphicsPixmapItem *> pixmapItems;
+    for (QGraphicsItem *item : items) {
+        QGraphicsPixmapItem *pixmapItem = qgraphicsitem_cast<QGraphicsPixmapItem *>(item);
+        if (pixmapItem) {
+            pixmapItems.append(pixmapItem);
+        }
+    }
+
+    out << pixmapItems.size();
+
+    for (QGraphicsPixmapItem *pixmapItem : pixmapItems) {
+        out << pixmapItem->pos();
+        out << pixmapItem->rotation();
+        out << pixmapItem->scale();
+
+        QByteArray imageByteArray;
+        QBuffer buffer(&imageByteArray);
+        buffer.open(QIODevice::WriteOnly);
+        pixmapItem->pixmap().toImage().save(&buffer, "PNG");
+
+        out << imageByteArray;
+
+    }
+
+    return byteArray;
+}
+
+/*
+Deserialized a QByteArray to place new pieces.
+*/
+// This currently does NOT work :(
+void interactivePiece::deserialize(const QByteArray &data) {
+    QDataStream in(data);
+    in.setVersion(QDataStream::Qt_5_15);
+
+    QList<QGraphicsItem *> existingItems = scene->items();
+
+    for (QGraphicsItem *item : existingItems) {
+        scene->removeItem(item);
+        delete item;
+    }
+
+    int itemCount;
+
+    in >> itemCount;
+    qDebug() << itemCount;
+
+    for (int i = 0; i < itemCount; ++i) {
+        QPointF position;
+        double rotation, scale;
+        QByteArray imageByteArray;
+
+        in >> position >> rotation >> scale >> imageByteArray;
+
+        QImage image;
+        if (!image.loadFromData(imageByteArray, "PNG")) {
+            continue;
+        }
+
+        QGraphicsPixmapItem *pixmapItem = new QGraphicsPixmapItem(QPixmap::fromImage(image));
+        pixmapItem->setFlags(QGraphicsItem::ItemIsMovable);
+        pixmapItem->setPos(position);
+        pixmapItem->setRotation(rotation);
+        pixmapItem->setScale(scale);
+
+        scene->addItem(pixmapItem);
+    }
+
+}
+

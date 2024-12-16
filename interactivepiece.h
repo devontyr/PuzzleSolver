@@ -10,6 +10,8 @@ class interactivePiece : public QGraphicsView {
 
 public:
     explicit interactivePiece(const QList<QImage> &pieces, QWidget *parent = nullptr);
+    QByteArray serialize();
+    void deserialize(const QByteArray &data);
 
 protected:
     void keyPressEvent(QKeyEvent *evt) override;
