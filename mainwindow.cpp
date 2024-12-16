@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include <imageviewer.h>
 #include <QtWidgets>
-#include "puzzlepiece.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), imageViewer(nullptr), processed(false) {
@@ -216,7 +215,7 @@ void MainWindow::processSlot() {
     scrollArea->setVisible(false);
     if (puzzleLayout) delete puzzleLayout;
 
-    puzzleLayout = new PuzzleSolverLayout(stitchedImage);
+    puzzleLayout = new ImageProcess(stitchedImage);
     mainLayout->addWidget(puzzleLayout);
 
     addImageAct->setEnabled(false);
@@ -227,6 +226,8 @@ void MainWindow::processSlot() {
 
     solvePuzzleAct->setEnabled(true);
     solveButton->setEnabled(true);
+
+
 }
 
 
@@ -284,7 +285,6 @@ void MainWindow::resetSlot() {
             imageViewer = nullptr;
         }
     }
-    qDebug() << "got here";
 
     processed = false;
 

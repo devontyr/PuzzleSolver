@@ -215,6 +215,8 @@ void ImageProcess::pieceSeperator(QImage &image, QImage &redImage) {
             }
         }
     }
+
+    pieceOutput();
 }
 
 /*
@@ -236,12 +238,13 @@ QVector<QVector<int>> ImageProcess::imageToMatrix(QImage &pieceImg) {
     int C = pieceImg.width(), R = pieceImg.height();
     QVector<QVector<int>> matrix(R, QVector<int>(C, 0));
 
-    for (int iY=0; iY < R; ++iY) {
-        for (int iX=0; iX < C; ++iX) {
+    qDebug() << "width" << C << "height" << R;
+    for (int iRow=0; iRow < R; ++iRow) {
+        for (int iCol=0; iCol < C; ++iCol) {
             // QUESTION HERE -- should we be storing redImage so that we can use red instead of isShadeOfBlack ?
-            QRgb pix = image.pixel(iX, iY);
+            QRgb pix = image.pixel(iCol, iRow);
             if (!isShadeOfBlack(pix)) {
-                matrix[iX][iY] = 1;
+                matrix[iRow][iCol] = 1;
             }
         }
     }
@@ -259,10 +262,40 @@ pair<int, int> ImageProcess::findCorner(QVector<QVector<int>>& piece, QVector<QV
 Takes in a single puzzle piece matrix and returns an edge (a list of pair coordinates).
 */
 vector<pair<int, int>> ImageProcess::findEdge(pair<int, int> corner1, pair<int, int> corner2, pair<int, int> direction) {
-    //start at left top corner, get top edge
-    //from right top corner, get right edge
-    //from bottom right corner, get bottom edge
-    //from bottom left corner, get left edge
+
+    vector<pair<int, int>> edge;
+    edge.push_back(corner1); // start at corner 1
+
+    // determine direction: right(1,0) down(0,-1) left(-1, 0) up(0,1)
+    pair<int, int> right(1,0); pair<int, int> down(0, -1); pair<int, int> left(-1,0); pair<int, int> up(0,1);
+    if (direction == right) pair<int, int> checkdir = up;
+    if (direction == down) pair<int, int> checkdir = right;
+    if (direction == left) pair<int, int> checkdir = down;
+    if (direction == up) pair<int, int> checkdir = left;
+
+    // check every line until you get to a row of all 1's
+    int LeftXbound = corner1.first, RightXBound = corner2.first;
+    bool lineAllOnes = false;
+    int iCol=0;
+    for (int iRow=LeftXbound; iRow < RightXBound; ++iRow) {
+        while (!lineAllOnes) {
+            ++iCol;
+        }
+    }
+
+    //positon and direction matter
+    //add the pixel if its not the same as the previous (point hit once on way in and once on way out, trim it off)
+    //turn left if you can or move forward based on the rules of what is around you
+    //debug by painting it on the QImage
+
+        // top: corner1.x to corner2.x
+        // right: corner1.y to corner2.y
+        // bottom: corner2.x to corner1.x
+        // left: corner2.y to corner1.y
+
+    // for each value, check if it is touching a 0 -- if yes, add to edge
+
+    return edge;
 }
 
 /*
@@ -330,5 +363,4 @@ puzzlepiece ImageProcess::mapEdges(QVector<QVector<int>> piece) {
     build_piece.south = findEdge(br_coord, bl_coord, {1, 0});
     build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
     return build_piece;
-
 }
