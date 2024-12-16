@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include "imageprocess.h"
-#include "imageviewer.h"
 #include "interactivepiece.h"
 #include "imageviewer.h"
 
@@ -14,12 +13,14 @@ class MainWindow : public QMainWindow
     ImageProcess *puzzleLayout;
     QImage processedImage;
     QPoint orgImageCenter;
-    interactivePiece* interactivePieceLayout;
     QHBoxLayout* layout;
     QHBoxLayout *mainLayout;
     QScrollArea *scrollArea;
     QWidget *placeholder;
     ImageViewer *imageViewer;
+
+    QAction *saveAct;
+    QAction *loadSaveAct;
 
     QAction *addImageAct;
     QPushButton *addImageButton;
@@ -49,6 +50,8 @@ public slots:
     void solveSlot();
     void hintSlot();
     void resetSlot();
+    void saveSlot();
+    void loadSaveSlot();
 
 };
 

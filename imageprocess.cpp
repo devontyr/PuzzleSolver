@@ -1,5 +1,4 @@
 #include "imageprocess.h"
-#include "interactivepiece.h"
 #include "puzzlepiece.h"
 
 #include <QtWidgets>
@@ -30,7 +29,7 @@ ImageProcess::ImageProcess(const QImage &_image):image(_image) {
 
     scene = new QGraphicsScene(this);
     solverInterface->setScene(scene);
-    interactivePiece* interactivePieceLayout = new interactivePiece(pieces);
+    interactivePieceLayout = new interactivePiece(pieces);
     mainLayout->addWidget(interactivePieceLayout);
 }
 
@@ -405,3 +404,51 @@ puzzlepiece ImageProcess::mapEdges(QVector<QVector<int>> piece) {
     build_piece.west = findEdge(bl_coord, tl_coord, {0, -1});
     return build_piece;
 }
+
+/*
+Serialized the class data to a QByteArray. This includes the information from InteractivePiece
+*/
+QByteArray ImageProcess::serialize() {
+    QByteArray byteArray;
+    QDataStream out(&byteArray, QIODevice::WriteOnly);
+
+    if (!image.isNull()) {
+        QByteArray imageByteArray;
+        QBuffer buffer(&imageByteArray);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer, "PNG");
+        out << imageByteArray;
+    }
+
+    if (interactivePieceLayout) {
+        QByteArray interactiveData = interactivePieceLayout->serialize();
+        out << interactiveData;
+    }
+
+    return byteArray;
+}
+
+/*
+Deserialized the information from a file to create a new InteractivePiece
+*/
+void ImageProcess::deserialize(const QByteArray &data) {
+    QDataStream in(data);
+    in.setVersion(QDataStream::Qt_5_15);
+
+    QByteArray imageByteArray;
+    in >> imageByteArray;
+    QImage loadedImage;
+    loadedImage.loadFromData(imageByteArray, "PNG");
+    image = loadedImage;
+
+    QByteArray interactiveData;
+    in >> interactiveData;
+
+
+    if (interactivePieceLayout) {
+        interactivePieceLayout->deserialize(interactiveData);
+    }
+}
+
+
+

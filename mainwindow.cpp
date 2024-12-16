@@ -58,6 +58,15 @@ MainWindow::MainWindow(QWidget *parent)
     resetAct->setEnabled(false);
     resetButton->setEnabled(false);
 
+    saveAct = new QAction("Save");
+    connect(saveAct, &QAction::triggered, this, &MainWindow::saveSlot);
+    // saveAct->setShortcut(Qt::CTRL | Qt::Key_S);
+    saveAct->setEnabled(false);
+
+    loadSaveAct = new QAction("Load");
+    connect(loadSaveAct, &QAction::triggered, this, &MainWindow::loadSaveSlot);
+    loadSaveAct->setShortcut(Qt::CTRL | Qt::Key_L);
+
     // Menu Bar Setup
     QMenu *fileMenu = new QMenu("&File");
     fileMenu->addAction(uploadAct);
@@ -66,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     fileMenu->addAction(solvePuzzleAct);
     fileMenu->addAction(hintAct);
     fileMenu->addAction(resetAct);
+    fileMenu->addAction(saveAct);
+    fileMenu->addAction(loadSaveAct);
     menuBar()->addMenu(fileMenu);
 
     // Save the last directory
@@ -141,6 +152,71 @@ void MainWindow::openImageSlot() {
     resetAct->setEnabled(true);
     resetButton->setEnabled(true);
 }
+
+void MainWindow::saveSlot() {
+    if (!puzzleLayout) {
+        QMessageBox::warning(this, "Save Error", "No puzzle layout to save.");
+        return;
+    }
+
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        "Save Puzzle Layout",
+        QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+        "Puzzle Files (*.pzl)"
+        );
+
+    if (filePath.isEmpty()) return;
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::warning(this, "Save Error", "Unable to open file for saving.");
+        return;
+    }
+
+    QByteArray data = puzzleLayout->serialize();
+    file.write(data);
+    file.close();
+}
+
+void MainWindow::loadSaveSlot() {
+    QString filePath = QFileDialog::getOpenFileName(
+        this,
+        "Load Puzzle Layout",
+        QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
+        "Puzzle Files (*.pzl)"
+        );
+
+    if (filePath.isEmpty()) return;
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::warning(this, "Load Error", "Unable to open file for loading.");
+        return;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    qDebug() << "Loaded data size:" << data.size();
+
+    if (puzzleLayout) {
+        mainLayout->removeWidget(puzzleLayout);
+        delete puzzleLayout;
+        puzzleLayout = nullptr;
+    }
+    scrollArea->setVisible(false);
+
+    // Create a new puzzle layout
+    puzzleLayout = new ImageProcess(QImage());
+    puzzleLayout->deserialize(data);
+
+    mainLayout->addWidget(puzzleLayout);
+}
+
+
+
+
 
 void MainWindow::addImageSlot() {
     QString fName = QFileDialog::getOpenFileName(this, "Select Additional Image", lastDir, "Image Files (*.png *.jpg *.bmp *.jpeg)");
@@ -227,6 +303,7 @@ void MainWindow::processSlot() {
     solvePuzzleAct->setEnabled(true);
     solveButton->setEnabled(true);
 
+    saveAct->setEnabled(true);
 
 }
 
