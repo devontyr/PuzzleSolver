@@ -255,7 +255,48 @@ QVector<QVector<int>> ImageProcess::imageToMatrix(QImage &pieceImg) {
 Takes in a single puzzle piece matrix and an ideal corner and returns the best macth coordinates for that corner.
 */
 pair<int, int> ImageProcess::findCorner(QVector<QVector<int>>& piece, QVector<QVector<int>>& idealCorner) {
+
     //XOR a corner matrix to all possible parts of piece matrix, return the best match
+
+    // Current best match point variable
+    pair<int, int> corner;
+
+    // Current best match value variable
+    int highScore = 0;
+    int currentScore;
+
+    //For each bit in the piece matrix
+    for (int row = 0; row < piece.length(); ++row){
+        for (int col = 0; col < piece[0].length(); ++col){
+
+            currentScore = 0;
+
+            for (int x = -3; x <= 3; ++x){
+                for (int y = -3; y <= 3; ++y){
+                    if ((row + x < 0) || (row + x >= piece.length()) || (col + y < 0) || (col + y >= piece[0].length())){
+                        if(idealCorner[x + 3][y + 3] == 0){
+                            ++currentScore;
+                        }
+                        continue;
+                    }
+
+
+                    if (piece[row + x][col + y] == idealCorner[x + 3][y + 3]){
+                        ++currentScore;
+                    }
+                }
+            }
+
+            if (currentScore > highScore){
+                highScore = currentScore;
+                corner.first = col;
+                corner.second = row;
+            }
+        }
+    }
+    //Return the current best pixel after all the matrix bits have been checked.
+    qDebug() << "Returnning the corner: " << corner;
+    return corner;
 }
 
 /*
