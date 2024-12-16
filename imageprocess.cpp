@@ -15,6 +15,19 @@ ImageProcess::ImageProcess(const QImage &_image):image(_image) {
     processImage(imageToProcess);
     pieceSeperator(image, redImage);
 
+    QVector<QVector<int>> tl_corner = {
+                                {0, 0, 0, 0, 0, 0, 0},
+                                {0, 0, 0, 0, 0, 0, 0},
+                                {0, 0, 0, 0, 0, 0, 0},
+                                {0, 0, 0, 1, 1, 1, 1},
+                                {0, 0, 0, 1, 1, 1, 1},
+                                {0, 0, 0, 1, 1, 1, 1},
+                                {0, 0, 0, 1, 1, 1, 1}
+                            };
+
+
+
+
     // LAYOUTS
     // set the horizontal box
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
@@ -267,10 +280,12 @@ pair <int, int> ImageProcess::findCorner(QVector<QVector<int>> piece, QVector<QV
 
             currentScore = 0;
 
-
             for (int x = -3; x <= 3; ++x){
                 for (int y = -3; y <= 3; ++y){
                     if ((row + x < 0) || (row + x >= piece.length()) || (col + y < 0) || (col + y >= piece[0].length())){
+                        if(idealCorner[x + 3][y + 3] == 0){
+                            ++currentScore;
+                        }
                         continue;
                     }
 
@@ -289,6 +304,7 @@ pair <int, int> ImageProcess::findCorner(QVector<QVector<int>> piece, QVector<QV
         }
     }
     //Return the current best pixel after all the matrix bits have been checked.
+    qDebug() << "Returnning the corner: " << corner;
     return corner;
 }
 
